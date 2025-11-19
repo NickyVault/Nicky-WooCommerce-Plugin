@@ -1,0 +1,315 @@
+<?php
+/**
+ * Nicky Payment Gateway Admin Class
+ *
+ * @package NickyPaymentGateway
+ */
+
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Admin class for Nicky Payment Gateway
+ */
+class Nicky_Payment_Gateway_Admin {
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('admin_init', array($this, 'admin_init'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+    }
+
+    /**
+     * Add admin menu
+     */
+    public function add_admin_menu() {
+        add_submenu_page(
+            'woocommerce',
+            'Nicky.me',
+            'Nicky.me Payments',
+            'manage_woocommerce',
+            'nicky-payment-gateway',
+            array($this, 'admin_page')
+        );
+    }
+
+    /**
+     * Initialize admin settings
+     */
+    public function admin_init() {
+        // Register settings if needed
+    }
+
+    /**
+     * Enqueue admin scripts
+     */
+    public function enqueue_admin_scripts($hook) {
+        if ($hook === 'woocommerce_page_nicky-payment-gateway') {
+            wp_enqueue_style('nicky-payment-admin', NICKY_PAYMENT_GATEWAY_PLUGIN_URL . 'assets/css/admin.css', array(), NICKY_PAYMENT_GATEWAY_VERSION);
+            wp_enqueue_script('nicky-payment-admin', NICKY_PAYMENT_GATEWAY_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), NICKY_PAYMENT_GATEWAY_VERSION, true);
+        }
+    }
+
+    /**
+     * Admin page content
+     */
+    public function admin_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+            
+            <?php
+            // Environment checks
+            if (!class_exists('WooCommerce')) {
+                echo '<div class="notice notice-error"><p>WooCommerce is not active!</p></div>';
+                echo '</div>';
+                return;
+            }
+            
+            if (!class_exists('WC_Gateway_Nicky')) {
+                echo '<div class="notice notice-error"><p>Gateway class WC_Gateway_Nicky not found! Please deactivate and reactivate the plugin.</p></div>';
+                echo '</div>';
+                return;
+            }
+            ?>
+            
+            <div class="nicky-admin-dashboard">
+                <div class="nicky-admin-section">
+                    <h2>Status</h2>
+                    <?php $this->display_gateway_status(); ?>
+                </div>
+
+                <div class="nicky-admin-section">
+                    <h2>Recent Transactions</h2>
+                    <?php $this->display_recent_transactions(); ?>
+                </div>
+
+                <div class="nicky-admin-section">
+                    <h2>Statistics</h2>
+                    <?php $this->display_statistics(); ?>
+                </div>
+
+                <div class="nicky-admin-section">
+                    <h2>Configuration</h2>
+                    <?php $this->display_gateway_configuration(); ?>
+                </div>
+
+                <div class="nicky-admin-section">
+                    <h2>Settings</h2>
+                    <p>
+                        <a href="<?php echo admin_url('admin.php?page=wc-settings&tab=checkout&section=nicky'); ?>" class="button button-primary">
+                            Configure Nicky.me
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Display gateway status
+     */
+    private function display_gateway_status() {
+        // Get settings directly from WordPress options
+        $gateway_settings = get_option('woocommerce_nicky_settings', array());
+        
+        if (empty($gateway_settings)) {
+            echo '<div class="notice notice-warning"><p>No gateway settings found. Please configure the gateway first.</p></div>';
+            return;
+        }
+        
+        $is_enabled = isset($gateway_settings['enabled']) && $gateway_settings['enabled'] === 'yes';
+        $api_key = isset($gateway_settings['api_key']) ? $gateway_settings['api_key'] : '';
+        $blockchain_asset_id = isset($gateway_settings['blockchain_asset_id']) ? $gateway_settings['blockchain_asset_id'] : '';
+        $has_api_keys = !empty($api_key) && !empty($blockchain_asset_id);
+
+        echo '<div class="nicky-status-grid">';
+        
+        echo '<div class="nicky-status-item">';
+        echo '<div class="status-indicator ' . ($is_enabled ? 'status-enabled' : 'status-disabled') . '"></div>';
+        echo '<div class="status-text">';
+        echo '<strong>Status</strong><br>';
+        echo $is_enabled ? 'Enabled' : 'Disabled';
+        echo '</div>';
+        echo '</div>';
+
+        echo '<div class="nicky-status-item">';
+        echo '<div class="status-indicator ' . ($has_api_keys ? 'status-configured' : 'status-error') . '"></div>';
+        echo '<div class="status-text">';
+        echo '<strong>API Configuration</strong><br>';
+        echo $has_api_keys ? 'Configured' : 'Not Configured';
+        
+        // Debug information (only show if WP_DEBUG is true)
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            echo '<br><small style="color: #666;">';
+            echo 'Debug: API Key: ' . (empty($api_key) ? 'empty' : 'length ' . strlen($api_key));
+            echo ', Asset ID: ' . (empty($blockchain_asset_id) ? 'empty' : 'length ' . strlen($blockchain_asset_id));
+            echo '</small>';
+        }
+        echo '</div>';
+        echo '</div>';
+
+        echo '</div>';
+    }
+
+    /**
+     * Display recent transactions
+     */
+    private function display_recent_transactions() {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . 'nicky_payment_transactions';
+        $transactions = $wpdb->get_results(
+            "SELECT * FROM $table_name ORDER BY created_at DESC LIMIT 10",
+            ARRAY_A
+        );
+
+        if (empty($transactions)) {
+            echo '<p>' . __('No transactions found.', 'nicky-payment-gateway') . '</p>';
+            return;
+        }
+
+        echo '<div class="nicky-transactions-table">';
+        echo '<table class="wp-list-table widefat fixed striped">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<th>' . __('Order ID', 'nicky-payment-gateway') . '</th>';
+        echo '<th>' . __('Transaction ID', 'nicky-payment-gateway') . '</th>';
+        echo '<th>' . __('Amount', 'nicky-payment-gateway') . '</th>';
+        echo '<th>' . __('Status', 'nicky-payment-gateway') . '</th>';
+        echo '<th>' . __('Date', 'nicky-payment-gateway') . '</th>';
+        echo '</tr>';
+        echo '</thead>';
+        echo '<tbody>';
+
+        foreach ($transactions as $transaction) {
+            echo '<tr>';
+            echo '<td><a href="' . admin_url('post.php?post=' . $transaction['order_id'] . '&action=edit') . '">#' . $transaction['order_id'] . '</a></td>';
+            echo '<td>' . esc_html($transaction['transaction_id']) . '</td>';
+            echo '<td>' . wc_price($transaction['amount'], array('currency' => $transaction['currency'])) . '</td>';
+            echo '<td><span class="status-badge status-' . esc_attr($transaction['payment_status']) . '">' . esc_html(ucfirst($transaction['payment_status'])) . '</span></td>';
+            echo '<td>' . date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($transaction['created_at'])) . '</td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody>';
+        echo '</table>';
+        echo '</div>';
+    }
+
+    /**
+     * Display gateway configuration
+     */
+    private function display_gateway_configuration() {
+        // Debug: Check if class exists
+        if (!class_exists('WC_Gateway_Nicky')) {
+            echo '<div class="notice notice-error"><p>Error: WC_Gateway_Nicky class not found!</p></div>';
+            return;
+        }
+        
+        try {
+            $gateway = new WC_Gateway_Nicky();
+            $logo_url = $gateway->get_gateway_icon();
+        } catch (Exception $e) {
+            echo '<div class="notice notice-error"><p>Error creating gateway: ' . esc_html($e->getMessage()) . '</p></div>';
+            return;
+        }
+        
+        echo '<div class="nicky-config-grid">';
+        
+        // Logo preview
+        echo '<div class="nicky-config-item">';
+        echo '<h4>' . __('Gateway Logo', 'nicky-payment-gateway') . '</h4>';
+        if (!empty($logo_url)) {
+            echo '<div class="logo-preview">';
+            echo '<img src="' . esc_url($logo_url) . '" alt="Gateway Logo" style="max-height: 40px; max-width: 200px; border: 1px solid #ddd; padding: 10px; background: white;">';
+            echo '</div>';
+            echo '<p class="description">' . __('This logo will be displayed in the checkout.', 'nicky-payment-gateway') . '</p>';
+        } else {
+            echo '<div class="logo-preview no-logo">';
+            echo '<div style="padding: 20px; border: 2px dashed #ddd; text-align: center; color: #666;">';
+            echo __('No logo configured', 'nicky-payment-gateway');
+            echo '</div>';
+            echo '</div>';
+            echo '<p class="description">' . __('Add your logo.png to assets/images/ or configure a custom logo URL.', 'nicky-payment-gateway') . '</p>';
+        }
+        echo '</div>';
+        
+        // Gateway title and description
+        echo '<div class="nicky-config-item">';
+        echo '<h4>' . __('Display Settings', 'nicky-payment-gateway') . '</h4>';
+        echo '<table class="form-table">';
+        echo '<tr>';
+        echo '<th>' . __('Title', 'nicky-payment-gateway') . '</th>';
+        echo '<td>' . esc_html($gateway->title) . '</td>';
+        echo '</tr>';
+        echo '<tr>';
+        echo '<th>' . __('Description', 'nicky-payment-gateway') . '</th>';
+        echo '<td>' . esc_html($gateway->description) . '</td>';
+        echo '</tr>';
+        echo '</table>';
+        echo '</div>';
+        
+        echo '</div>';
+    }
+
+    /**
+     * Display statistics
+     */
+    private function display_statistics() {
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . 'nicky_payment_transactions';
+
+        // Get statistics
+        $total_transactions = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+        $successful_transactions = $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE payment_status = 'completed'");
+        $total_amount = $wpdb->get_var("SELECT SUM(amount) FROM $table_name WHERE payment_status = 'completed'");
+        $today_transactions = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_name WHERE DATE(created_at) = %s", date('Y-m-d')));
+
+        echo '<div class="nicky-stats-grid">';
+        
+        echo '<div class="nicky-stat-item">';
+        echo '<div class="stat-number">' . number_format($total_transactions) . '</div>';
+        echo '<div class="stat-label">' . __('Total Transactions', 'nicky-payment-gateway') . '</div>';
+        echo '</div>';
+
+        echo '<div class="nicky-stat-item">';
+        echo '<div class="stat-number">' . number_format($successful_transactions) . '</div>';
+        echo '<div class="stat-label">' . __('Successful Payments', 'nicky-payment-gateway') . '</div>';
+        echo '</div>';
+
+        echo '<div class="nicky-stat-item">';
+        echo '<div class="stat-number">' . wc_price($total_amount) . '</div>';
+        echo '<div class="stat-label">' . __('Total Revenue', 'nicky-payment-gateway') . '</div>';
+        echo '</div>';
+
+        echo '<div class="nicky-stat-item">';
+        echo '<div class="stat-number">' . number_format($today_transactions) . '</div>';
+        echo '<div class="stat-label">' . __('Today\'s Transactions', 'nicky-payment-gateway') . '</div>';
+        echo '</div>';
+
+        echo '</div>';
+
+        // Success rate
+        if ($total_transactions > 0) {
+            $success_rate = ($successful_transactions / $total_transactions) * 100;
+            echo '<div class="nicky-success-rate">';
+            echo '<h3>' . __('Success Rate', 'nicky-payment-gateway') . '</h3>';
+            echo '<div class="progress-bar">';
+            echo '<div class="progress-fill" style="width: ' . $success_rate . '%"></div>';
+            echo '</div>';
+            echo '<p>' . sprintf(__('%s%% of transactions successful', 'nicky-payment-gateway'), number_format($success_rate, 1)) . '</p>';
+            echo '</div>';
+        }
+    }
+}
+
+// Initialize admin class
+new Nicky_Payment_Gateway_Admin();

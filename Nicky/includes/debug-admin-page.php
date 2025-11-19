@@ -1,0 +1,181 @@
+<?php
+/**
+ * Sicheres Debug Script für Nicky Payment Gateway
+ * Dieses Script wird als Admin-Seite ausgeführt
+ */
+
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Add admin menu for debugging
+add_action('admin_menu', 'nicky_debug_menu');
+
+function nicky_debug_menu() {
+    add_submenu_page(
+        'woocommerce',
+        'Nicky.me Debug',
+        'Nicky.me Debug',
+        'manage_woocommerce',
+        'nicky-debug',
+        'nicky_debug_page'
+    );
+}
+
+function nicky_debug_page() {
+    if (!class_exists('WooCommerce')) {
+        echo '<div class="error"><p>WooCommerce ist nicht installiert oder aktiv</p></div>';
+        return;
+    }
+
+    echo '<div class="wrap">';
+    echo '<h1>Nicky.me Payment Gateway - Debug</h1>';
+    
+    echo '<style>
+        .nicky-debug .success { color: green; }
+        .nicky-debug .error { color: red; }
+        .nicky-debug .warning { color: orange; }
+        .nicky-debug .debug-section { margin: 20px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #0073aa; }
+        .nicky-debug pre { background: #fff; padding: 10px; border: 1px solid #ccd0d4; overflow: auto; }
+    </style>';
+    
+    echo '<div class="nicky-debug">';
+
+    // 1. WooCommerce Status
+    echo '<div class="debug-section">';
+    echo '<h2>1. WooCommerce Status</h2>';
+    echo '<p class="success">✓ WooCommerce ist geladen</p>';
+    echo '<p>Version: ' . WC_VERSION . '</p>';
+    echo '</div>';
+
+    // 2. Gateway Registration
+    echo '<div class="debug-section">';
+    echo '<h2>2. Nicky Gateway Registration</h2>';
+    
+    if (class_exists('WC_Gateway_Nicky')) {
+        echo '<p class="success">✓ WC_Gateway_Nicky Klasse existiert</p>';
+        
+        $gateway = new WC_Gateway_Nicky();
+        echo '<p>Gateway ID: ' . esc_html($gateway->id) . '</p>';
+        echo '<p>Gateway Title: ' . esc_html($gateway->title) . '</p>';
+        echo '<p>Gateway Enabled: ' . ($gateway->enabled === 'yes' ? 'Ja' : 'Nein') . '</p>';
+        echo '<p>Test Mode: ' . ($gateway->testmode ? 'Ja' : 'Nein') . '</p>';
+        
+    } else {
+        echo '<p class="error">✗ WC_Gateway_Nicky Klasse existiert NICHT</p>';
+    }
+    echo '</div>';
+
+    // 3. Available Payment Gateways
+    echo '<div class="debug-section">';
+    echo '<h2>3. Verfügbare Zahlungsgateways</h2>';
+    
+    $payment_gateways = WC()->payment_gateways()->payment_gateways();
+    echo '<p>Anzahl registrierter Gateways: ' . count($payment_gateways) . '</p>';
+    
+    $nicky_found = false;
+    foreach ($payment_gateways as $id => $gateway) {
+        if ($id === 'nicky') {
+            $nicky_found = true;
+            echo '<p class="success">✓ Nicky Gateway gefunden: ' . esc_html($gateway->get_title()) . '</p>';
+            echo '<p>  - Enabled: ' . ($gateway->enabled === 'yes' ? 'Ja' : 'Nein') . '</p>';
+            echo '<p>  - Available: ' . ($gateway->is_available() ? 'Ja' : 'Nein') . '</p>';
+            break;
+        }
+    }
+    
+    if (!$nicky_found) {
+        echo '<p class="error">✗ Nicky Gateway ist NICHT in der Liste der Gateways</p>';
+    }
+    
+    echo '<p>Alle Gateways:</p>';
+    echo '<ul>';
+    foreach ($payment_gateways as $id => $gateway) {
+        $enabled = ($gateway->enabled === 'yes') ? 'Ja' : 'Nein';
+        $available = $gateway->is_available() ? 'Ja' : 'Nein';
+        echo '<li>' . esc_html($id) . ' - ' . esc_html($gateway->get_title()) . ' (Enabled: ' . $enabled . ', Available: ' . $available . ')</li>';
+    }
+    echo '</ul>';
+    echo '</div>';
+
+    // 4. Gateway Availability Check
+    echo '<div class="debug-section">';
+    echo '<h2>4. Gateway Verfügbarkeit Prüfung</h2>';
+    
+    if (class_exists('WC_Gateway_Nicky')) {
+        $gateway = new WC_Gateway_Nicky();
+        
+        echo '<p>Ausführliche Verfügbarkeits-Prüfung:</p>';
+        echo '<ul>';
+        
+        // Enabled check
+        echo '<li>Gateway aktiviert: ' . ($gateway->enabled === 'yes' ? 'Ja' : 'Nein') . '</li>';
+        
+        // Test mode
+        echo '<li>Test Modus: ' . ($gateway->testmode ? 'Ja' : 'Nein') . '</li>';
+        
+        // API configuration
+        echo '<li>API Key gesetzt: ' . (!empty($gateway->api_key) ? 'Ja' : 'Nein') . '</li>';
+        echo '<li>Blockchain Asset ID gesetzt: ' . (!empty($gateway->blockchain_asset_id) ? 'Ja' : 'Nein') . '</li>';
+        
+        echo '</ul>';
+        
+        // Final availability
+        echo '<p><strong>Final verfügbar: ' . ($gateway->is_available() ? 'Ja' : 'Nein') . '</strong></p>';
+    }
+    echo '</div>';
+
+    // 5. Gateway Settings
+    echo '<div class="debug-section">';
+    echo '<h2>5. Gateway Einstellungen</h2>';
+    
+    $settings = get_option('woocommerce_nicky_settings', array());
+    if (!empty($settings)) {
+        echo '<p class="success">✓ Gateway Einstellungen gefunden</p>';
+        // Sensitive data ausblenden
+        $safe_settings = $settings;
+        if (isset($safe_settings['api_key']) && !empty($safe_settings['api_key'])) {
+            $safe_settings['api_key'] = '***gesetzt***';
+        }
+        echo '<pre>' . esc_html(print_r($safe_settings, true)) . '</pre>';
+    } else {
+        echo '<p class="error">✗ Keine Gateway Einstellungen gefunden</p>';
+    }
+    echo '</div>';
+
+    // 6. Quick Fix Actions
+    echo '<div class="debug-section">';
+    echo '<h2>6. Schnelle Lösungen</h2>';
+    
+    if (isset($_POST['enable_gateway'])) {
+        $settings = get_option('woocommerce_nicky_settings', array());
+        $settings['enabled'] = 'yes';
+        if (empty($settings['title'])) {
+            $settings['title'] = 'Nicky.me Payment';
+        }
+        if (empty($settings['description'])) {
+            $settings['description'] = 'Pay securely with crypto via Nicky.me.';
+        }
+        update_option('woocommerce_nicky_settings', $settings);
+        echo '<div class="notice notice-success"><p>Gateway wurde aktiviert und in den Test-Modus versetzt!</p></div>';
+    }
+    
+    echo '<form method="post">';
+    echo '<p>';
+    echo '<input type="submit" name="enable_gateway" class="button button-primary" value="Gateway aktivieren (Test-Modus)" />';
+    echo '</p>';
+    echo '</form>';
+    
+    echo '<p><strong>Manuelle Schritte:</strong></p>';
+    echo '<ol>';
+    echo '<li>Gehen Sie zu <a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=nicky') . '">WooCommerce > Einstellungen > Zahlungen > Nicky.me</a></li>';
+    echo '<li>Aktivieren Sie das Gateway</li>';
+    echo '<li>Setzen Sie es in den Test-Modus für erste Tests</li>';
+    echo '<li>Fügen Sie Items zum Warenkorb hinzu und testen Sie den Checkout</li>';
+    echo '</ol>';
+    echo '</div>';
+
+    echo '</div>'; // .nicky-debug
+    echo '</div>'; // .wrap
+}

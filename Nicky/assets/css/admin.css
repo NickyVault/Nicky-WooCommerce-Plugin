@@ -1,0 +1,317 @@
+/* Nicky Payment Gateway Admin Styles */
+
+.nicky-admin-dashboard {
+    max-width: 1200px;
+    margin: 20px 0;
+}
+
+.nicky-admin-section {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.nicky-admin-section h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #1d2327;
+}
+
+/* Gateway Configuration */
+.nicky-config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.nicky-config-item {
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #e5e5e5;
+}
+
+.nicky-config-item h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #1d2327;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.logo-preview {
+    margin-bottom: 10px;
+}
+
+.logo-preview img {
+    display: block;
+    border-radius: 4px;
+}
+
+.logo-preview.no-logo div {
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.nicky-config-item .form-table {
+    margin: 0;
+}
+
+.nicky-config-item .form-table th {
+    padding: 5px 10px 5px 0;
+    font-weight: 600;
+    font-size: 13px;
+    width: 30%;
+}
+
+.nicky-config-item .form-table td {
+    padding: 5px 0;
+    font-size: 13px;
+}
+
+.nicky-config-item .description {
+    font-size: 12px;
+    color: #646970;
+    margin: 5px 0 0 0;
+    font-style: italic;
+}
+
+/* Status Grid */
+.nicky-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.nicky-status-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #f6f7f7;
+    border-radius: 6px;
+    border-left: 4px solid #ddd;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.status-indicator.status-enabled,
+.status-indicator.status-configured {
+    background-color: #00a32a;
+    border-left-color: #00a32a;
+}
+
+.status-indicator.status-disabled,
+.status-indicator.status-error {
+    background-color: #d63638;
+}
+
+.status-indicator.status-test {
+    background-color: #dba617;
+}
+
+.status-indicator.status-live {
+    background-color: #00a32a;
+}
+
+.status-text strong {
+    color: #1d2327;
+    font-size: 14px;
+}
+
+.status-text {
+    font-size: 13px;
+    color: #646970;
+}
+
+/* Transactions Table */
+.nicky-transactions-table {
+    overflow-x: auto;
+}
+
+.nicky-transactions-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.status-badge.status-completed {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-badge.status-failed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-badge.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.status-refunded {
+    background-color: #cff4fc;
+    color: #055160;
+}
+
+/* Statistics Grid */
+.nicky-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.nicky-stat-item {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nicky-stat-item:nth-child(2) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.nicky-stat-item:nth-child(3) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.nicky-stat-item:nth-child(4) {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 13px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Success Rate */
+.nicky-success-rate {
+    margin-top: 30px;
+}
+
+.nicky-success-rate h3 {
+    margin-bottom: 15px;
+    color: #1d2327;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00a32a 0%, #4caf50 100%);
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+    animation: shine 2s infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nicky-status-grid,
+    .nicky-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nicky-admin-section {
+        padding: 15px;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+    }
+}
+
+/* Button Enhancements */
+.button.button-primary {
+    background: #0073aa;
+    border-color: #0073aa;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.button.button-primary:hover {
+    background: #005a87;
+    border-color: #005a87;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading States */
+.nicky-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.nicky-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0073aa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}

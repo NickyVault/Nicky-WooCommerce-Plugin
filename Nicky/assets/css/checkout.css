@@ -1,0 +1,565 @@
+/* Nicky Payment Gateway Styles */
+
+/* Gateway Logo */
+.wc_payment_method.payment_method_nicky img {
+    max-height: 24px;
+    max-width: 120px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.wc_payment_method.payment_method_nicky label {
+    display: flex;
+    align-items: center;
+}
+
+.wc_payment_method.payment_method_nicky label img {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* Nicky Payment Form Styles */
+#wc-nicky-form {
+    background: transparent !important;
+    padding: 20px 0;
+    border: none;
+}
+
+#wc-nicky-form .form-row {
+    margin-bottom: 15px;
+    padding: 0;
+}
+
+#wc-nicky-form .form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+#wc-nicky-form .form-row label .required {
+    color: #e74c3c;
+}
+
+#wc-nicky-form .input-text,
+#wc-nicky-form .select,
+#wc-nicky-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+#wc-nicky-form .input-text:focus,
+#wc-nicky-form .select:focus {
+    border-color: #0073aa;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.1);
+}
+
+#wc-nicky-form .form-row-first,
+#wc-nicky-form .form-row-last {
+    width: 48%;
+    float: left;
+}
+
+#wc-nicky-form .form-row-last {
+    margin-left: 4%;
+}
+
+#wc-nicky-form .form-row-wide {
+    width: 100%;
+    clear: both;
+}
+
+#wc-nicky-form small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 12px;
+}
+
+#wc-nicky-form textarea.input-text {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* Error styling */
+#wc-nicky-form .input-text.error,
+#wc-nicky-form .select.error {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+}
+
+.nicky-error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Buyer Section Styles */
+.nicky-buyer-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e6e6e6;
+}
+
+/* Legacy hidden class - only for classic checkout */
+.woocommerce-checkout .nicky-buyer-section.hidden {
+    display: none !important;
+}
+
+/* For WooCommerce Blocks, always show the buyer section */
+.wp-block-woocommerce-checkout .nicky-buyer-section,
+.wc-block-checkout .nicky-buyer-section,
+[data-block-name="woocommerce/checkout"] .nicky-buyer-section {
+    display: block !important;
+}
+
+/* Ensure button is visible in Blocks */
+.wp-block-woocommerce-checkout #nicky-open-buyer-modal,
+.wc-block-checkout #nicky-open-buyer-modal,
+[data-block-name="woocommerce/checkout"] #nicky-open-buyer-modal {
+    display: inline-block !important;
+}
+
+.nicky-buyer-section h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Modal Styles */
+#nicky-buyer-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999999 !important;
+    display: none !important;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out;
+}
+
+#nicky-buyer-modal-backdrop[style*="display: block"] {
+    display: block !important;
+}
+
+#nicky-buyer-modal-backdrop[style*="opacity: 1"] {
+    opacity: 1 !important;
+}
+
+#nicky-buyer-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    max-width: 520px;
+    width: 92%;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#nicky-buyer-modal h3 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+#nicky-buyer-modal .form-row {
+    margin-bottom: 15px;
+}
+
+#nicky-buyer-modal .form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+#nicky-buyer-modal .form-row label .required {
+    color: #e74c3c;
+}
+
+#nicky-buyer-modal .input-text {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+#nicky-buyer-modal textarea.input-text {
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.modal-actions .button {
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    color: #333;
+}
+
+.modal-actions .button.alt {
+    background: #0073aa;
+    color: #fff;
+    border-color: #0073aa;
+}
+
+.modal-actions .button:hover {
+    background: #e6e6e6;
+}
+
+.modal-actions .button.alt:hover {
+    background: #005a87;
+    border-color: #005a87;
+}
+
+/* Date input specific styling */
+#wc-nicky-form input[type="date"],
+#nicky-buyer-modal input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    display: block;
+}
+
+/* Test mode notice */
+.nicky-test-mode-notice {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Payment info box */
+.nicky-payment-info {
+    background: #f0f8ff;
+    border-left: 4px solid #0073aa;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 4px;
+}
+
+.nicky-payment-info p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Supported methods */
+.nicky-supported-methods {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.nicky-supported-methods small {
+    color: #666;
+}
+
+/* Clear floats */
+#wc-nicky-form .clear {
+    clear: both;
+    height: 0;
+}
+
+/* Payment method selection with logo */
+.payment_methods .wc_payment_method label[for="payment_method_nicky_payment_gateway"] {
+    position: relative;
+    padding-right: 130px; /* Space for logo */
+}
+
+.payment_methods .wc_payment_method label[for="payment_method_nicky_payment_gateway"] img {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    max-height: 20px;
+    max-width: 100px;
+}
+
+.wc-credit-card-form {
+    background: transparent !important;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.wc-credit-card-form .form-row {
+    margin-bottom: 15px;
+}
+
+.wc-credit-card-form .form-row-first,
+.wc-credit-card-form .form-row-last {
+    width: 48%;
+    float: left;
+}
+
+.wc-credit-card-form .form-row-last {
+    float: right;
+}
+
+.wc-credit-card-form .form-row-wide {
+    width: 100%;
+    clear: both;
+}
+
+.wc-credit-card-form input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.wc-credit-card-form input[type="text"]:focus {
+    border-color: #007cba;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.1);
+}
+
+.wc-credit-card-form input[type="text"]:invalid {
+    border-color: #e2401c;
+}
+
+.wc-credit-card-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.wc-credit-card-form .required {
+    color: #e2401c;
+}
+
+.nicky-payment-error {
+    color: #e2401c;
+    font-size: 0.875em;
+    margin-top: 5px;
+    padding: 5px 0;
+    border-left: 3px solid #e2401c;
+    padding-left: 10px;
+    background-color: rgba(226, 64, 28, 0.05);
+}
+
+/* Test mode notice */
+.nicky-test-mode-notice {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+/* Card icons */
+.nicky-card-icons {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.nicky-card-icon {
+    width: 32px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.nicky-card-icon.active {
+    opacity: 1;
+    border-color: #007cba;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .wc-credit-card-form .form-row-first,
+    .wc-credit-card-form .form-row-last {
+        width: 100%;
+        float: none;
+        margin-bottom: 15px;
+    }
+}
+
+/* Loading state */
+.processing .wc-credit-card-form input {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.processing .wc-credit-card-form::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007cba;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Nicky payment instructions */
+.nicky-payment-instructions {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border-left: 4px solid #007cba;
+}
+
+.nicky-payment-instructions h4 {
+    margin-top: 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.nicky-payment-instructions ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.nicky-payment-instructions li {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.nicky-payment-info {
+    margin: 15px 0;
+    padding: 12px 15px;
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 4px;
+}
+
+.nicky-info-text {
+    margin: 0;
+    color: #0066cc;
+    font-size: 14px;
+}
+
+.nicky-supported-methods {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.nicky-supported-methods small {
+    color: #666;
+    font-style: italic;
+}
+
+/* Payment pending status */
+.nicky-payment-pending {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 20px;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.nicky-payment-pending h3 {
+    margin-top: 0;
+    color: #856404;
+}
+
+.nicky-payment-pending .button {
+    background-color: #007cba;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.nicky-payment-pending .button:hover {
+    background-color: #005a87;
+}
+
+/* Gateway selection improvements */
+.payment_method_nicky {
+    position: relative;
+}
+
+.payment_method_nicky .nicky-gateway-logo {
+    float: right;
+    margin-left: 10px;
+    max-height: 24px;
+    max-width: 120px;
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 600px) {
+    .nicky-payment-instructions {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    .payment_method_nicky .nicky-gateway-logo {
+        float: none;
+        display: block;
+        margin: 10px 0;
+    }
+}
+
+/* Success and error messages */
+.woocommerce-message.nicky-success {
+    border-left-color: #46b450;
+    background-color: #f7fcf0;
+}
+
+.woocommerce-error.nicky-error {
+    border-left-color: #dc3232;
+    background-color: #fef7f1;
+}
