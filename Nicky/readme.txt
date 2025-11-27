@@ -26,7 +26,7 @@ Nicky.me is a secure and reliable cryptocurrency payment gateway for your WooCom
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/nicky-payment-gateway` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/nicky-me` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to WooCommerce > Settings > Payments and configure the Nicky.me Payment Gateway.
 4. Enter your API key from your Nicky.me account (create an account at https://nicky.me if you don't have one).

@@ -33,7 +33,7 @@ class Nicky_Payment_Gateway_Admin {
             'Nicky.me',
             'Nicky.me Payments',
             'manage_woocommerce',
-            'nicky-payment-gateway',
+            'nicky-me',
             array($this, 'admin_page')
         );
     }
@@ -49,7 +49,7 @@ class Nicky_Payment_Gateway_Admin {
      * Enqueue admin scripts
      */
     public function enqueue_admin_scripts($hook) {
-        if ($hook === 'woocommerce_page_nicky-payment-gateway') {
+        if ($hook === 'woocommerce_page_nicky-me') {
             wp_enqueue_style('nicky-payment-admin', NICKY_PAYMENT_GATEWAY_PLUGIN_URL . 'assets/css/admin.css', array(), NICKY_PAYMENT_GATEWAY_VERSION);
             wp_enqueue_script('nicky-payment-admin', NICKY_PAYMENT_GATEWAY_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), NICKY_PAYMENT_GATEWAY_VERSION, true);
         }
@@ -171,7 +171,7 @@ class Nicky_Payment_Gateway_Admin {
         );
 
         if (empty($transactions)) {
-            echo '<p>' . __('No transactions found.', 'nicky-payment-gateway') . '</p>';
+            echo '<p>' . __('No transactions found.', 'nicky-me') . '</p>';
             return;
         }
 
@@ -179,11 +179,11 @@ class Nicky_Payment_Gateway_Admin {
         echo '<table class="wp-list-table widefat fixed striped">';
         echo '<thead>';
         echo '<tr>';
-        echo '<th>' . __('Order ID', 'nicky-payment-gateway') . '</th>';
-        echo '<th>' . __('Transaction ID', 'nicky-payment-gateway') . '</th>';
-        echo '<th>' . __('Amount', 'nicky-payment-gateway') . '</th>';
-        echo '<th>' . __('Status', 'nicky-payment-gateway') . '</th>';
-        echo '<th>' . __('Date', 'nicky-payment-gateway') . '</th>';
+        echo '<th>' . __('Order ID', 'nicky-me') . '</th>';
+        echo '<th>' . __('Transaction ID', 'nicky-me') . '</th>';
+        echo '<th>' . __('Amount', 'nicky-me') . '</th>';
+        echo '<th>' . __('Status', 'nicky-me') . '</th>';
+        echo '<th>' . __('Date', 'nicky-me') . '</th>';
         echo '</tr>';
         echo '</thead>';
         echo '<tbody>';
@@ -225,32 +225,32 @@ class Nicky_Payment_Gateway_Admin {
         
         // Logo preview
         echo '<div class="nicky-config-item">';
-        echo '<h4>' . __('Gateway Logo', 'nicky-payment-gateway') . '</h4>';
+        echo '<h4>' . __('Gateway Logo', 'nicky-me') . '</h4>';
         if (!empty($logo_url)) {
             echo '<div class="logo-preview">';
             echo '<img src="' . esc_url($logo_url) . '" alt="Gateway Logo" style="max-height: 40px; max-width: 200px; border: 1px solid #ddd; padding: 10px; background: white;">';
             echo '</div>';
-            echo '<p class="description">' . __('This logo will be displayed in the checkout.', 'nicky-payment-gateway') . '</p>';
+            echo '<p class="description">' . __('This logo will be displayed in the checkout.', 'nicky-me') . '</p>';
         } else {
             echo '<div class="logo-preview no-logo">';
             echo '<div style="padding: 20px; border: 2px dashed #ddd; text-align: center; color: #666;">';
-            echo __('No logo configured', 'nicky-payment-gateway');
+            echo __('No logo configured', 'nicky-me');
             echo '</div>';
             echo '</div>';
-            echo '<p class="description">' . __('Add your logo.png to assets/images/ or configure a custom logo URL.', 'nicky-payment-gateway') . '</p>';
+            echo '<p class="description">' . __('Add your logo.png to assets/images/ or configure a custom logo URL.', 'nicky-me') . '</p>';
         }
         echo '</div>';
         
         // Gateway title and description
         echo '<div class="nicky-config-item">';
-        echo '<h4>' . __('Display Settings', 'nicky-payment-gateway') . '</h4>';
+        echo '<h4>' . __('Display Settings', 'nicky-me') . '</h4>';
         echo '<table class="form-table">';
         echo '<tr>';
-        echo '<th>' . __('Title', 'nicky-payment-gateway') . '</th>';
+        echo '<th>' . __('Title', 'nicky-me') . '</th>';
         echo '<td>' . esc_html($gateway->title) . '</td>';
         echo '</tr>';
         echo '<tr>';
-        echo '<th>' . __('Description', 'nicky-payment-gateway') . '</th>';
+        echo '<th>' . __('Description', 'nicky-me') . '</th>';
         echo '<td>' . esc_html($gateway->description) . '</td>';
         echo '</tr>';
         echo '</table>';
@@ -277,22 +277,22 @@ class Nicky_Payment_Gateway_Admin {
         
         echo '<div class="nicky-stat-item">';
         echo '<div class="stat-number">' . number_format($total_transactions) . '</div>';
-        echo '<div class="stat-label">' . __('Total Transactions', 'nicky-payment-gateway') . '</div>';
+        echo '<div class="stat-label">' . __('Total Transactions', 'nicky-me') . '</div>';
         echo '</div>';
 
         echo '<div class="nicky-stat-item">';
         echo '<div class="stat-number">' . number_format($successful_transactions) . '</div>';
-        echo '<div class="stat-label">' . __('Successful Payments', 'nicky-payment-gateway') . '</div>';
+        echo '<div class="stat-label">' . __('Successful Payments', 'nicky-me') . '</div>';
         echo '</div>';
 
         echo '<div class="nicky-stat-item">';
         echo '<div class="stat-number">' . wc_price($total_amount) . '</div>';
-        echo '<div class="stat-label">' . __('Total Revenue', 'nicky-payment-gateway') . '</div>';
+        echo '<div class="stat-label">' . __('Total Revenue', 'nicky-me') . '</div>';
         echo '</div>';
 
         echo '<div class="nicky-stat-item">';
         echo '<div class="stat-number">' . number_format($today_transactions) . '</div>';
-        echo '<div class="stat-label">' . __('Today\'s Transactions', 'nicky-payment-gateway') . '</div>';
+        echo '<div class="stat-label">' . __('Today\'s Transactions', 'nicky-me') . '</div>';
         echo '</div>';
 
         echo '</div>';
@@ -301,11 +301,11 @@ class Nicky_Payment_Gateway_Admin {
         if ($total_transactions > 0) {
             $success_rate = ($successful_transactions / $total_transactions) * 100;
             echo '<div class="nicky-success-rate">';
-            echo '<h3>' . __('Success Rate', 'nicky-payment-gateway') . '</h3>';
+            echo '<h3>' . __('Success Rate', 'nicky-me') . '</h3>';
             echo '<div class="progress-bar">';
             echo '<div class="progress-fill" style="width: ' . $success_rate . '%"></div>';
             echo '</div>';
-            echo '<p>' . sprintf(__('%s%% of transactions successful', 'nicky-payment-gateway'), number_format($success_rate, 1)) . '</p>';
+            echo '<p>' . sprintf(__('%s%% of transactions successful', 'nicky-me'), number_format($success_rate, 1)) . '</p>';
             echo '</div>';
         }
     }

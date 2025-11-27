@@ -14,24 +14,24 @@ To add a new translation:
 
 1. Generate the POT file:
    ```bash
-   wp i18n make-pot . languages/nicky-payment-gateway.pot
+   wp i18n make-pot . languages/nicky-me.pot
    ```
 
 2. Create language-specific PO files:
    ```bash
-   msginit -l de_DE -o languages/nicky-payment-gateway-de_DE.po -i languages/nicky-payment-gateway.pot
+   msginit -l de_DE -o languages/nicky-me-de_DE.po -i languages/nicky-me.pot
    ```
 
 3. Translate the strings in the PO file
 
 4. Compile to MO file:
    ```bash
-   msgfmt languages/nicky-payment-gateway-de_DE.po -o languages/nicky-payment-gateway-de_DE.mo
+   msgfmt languages/nicky-me-de_DE.po -o languages/nicky-me-de_DE.mo
    ```
 
 ## Text Domain
 
-The plugin uses the text domain: `nicky-payment-gateway`
+The plugin uses the text domain: `nicky-me`
 
 ## Translation Functions Used
 

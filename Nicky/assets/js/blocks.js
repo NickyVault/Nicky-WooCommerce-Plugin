@@ -20,7 +20,7 @@
                 alt: 'Nicky.me',
                 style: { height: '20px', marginRight: '8px' }
             }),
-            decodeEntities( settings.title || __( 'Nicky.me Payment', 'nicky-payment-gateway' ) )
+            decodeEntities( settings.title || __( 'Nicky.me Payment', 'nicky-me' ) )
         ),
         content: createElement(
             'div',
@@ -28,17 +28,17 @@
             createElement(
                 'p',
                 { style: { margin: '0 0 15px 0' } },
-                decodeEntities( settings.description || __( 'Pay securely with Nicky.me', 'nicky-payment-gateway' ) )
+                decodeEntities( settings.description || __( 'Pay securely with Nicky.me', 'nicky-me' ) )
             ),
 
         ),
         edit: createElement(
             'div',
             {},
-            decodeEntities( settings.description || __( 'Pay securely with Nicky.me', 'nicky-payment-gateway' ) )
+            decodeEntities( settings.description || __( 'Pay securely with Nicky.me', 'nicky-me' ) )
         ),
         canMakePayment: () => true,
-        ariaLabel: __( 'Nicky.me Payment Method', 'nicky-payment-gateway' ),
+        ariaLabel: __( 'Nicky.me Payment Method', 'nicky-me' ),
         supports: {
             features: settings.supports || [ 'products' ]
         }

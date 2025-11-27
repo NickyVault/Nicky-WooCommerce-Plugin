@@ -46,7 +46,7 @@ final class WC_Gateway_Nicky_Blocks_Support extends AbstractPaymentMethodType {
             'description' => $this->get_setting( 'description' ),
             'supports'    => array_filter( $this->get_supported_features(), [ $gateway, 'supports' ] ),
             'icon'        => $gateway->get_gateway_icon(),
-            'instructions' => __('You will be redirected to Nicky.me to complete your payment securely.', 'nicky-payment-gateway'),
+            'instructions' => __('You will be redirected to Nicky.me to complete your payment securely.', 'nicky-me'),
         ];
     }
     

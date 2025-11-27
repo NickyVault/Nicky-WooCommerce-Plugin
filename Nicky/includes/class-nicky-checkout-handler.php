@@ -55,10 +55,10 @@ class Nicky_Checkout_Handler {
                 'currency' => get_woocommerce_currency(),
                 'currency_symbol' => get_woocommerce_currency_symbol(),
                 'i18n' => array(
-                    'processing' => __('Processing your payment...', 'nicky-payment-gateway'),
-                    'redirecting' => __('Redirecting to Nicky.me...', 'nicky-payment-gateway'),
-                    'please_wait' => __('Please wait while we prepare your payment.', 'nicky-payment-gateway'),
-                    'error_occurred' => __('An error occurred. Please try again.', 'nicky-payment-gateway'),
+                    'processing' => __('Processing your payment...', 'nicky-me'),
+                    'redirecting' => __('Redirecting to Nicky.me...', 'nicky-me'),
+                    'please_wait' => __('Please wait while we prepare your payment.', 'nicky-me'),
+                    'error_occurred' => __('An error occurred. Please try again.', 'nicky-me'),
                 )
             ));
 
@@ -137,20 +137,20 @@ class Nicky_Checkout_Handler {
         $gateways = WC()->payment_gateways()->payment_gateways();
         
         if (!isset($gateways['nicky'])) {
-            wc_add_notice(__('Nicky.me payment method is not available.', 'nicky-payment-gateway'), 'error');
+            wc_add_notice(__('Nicky.me payment method is not available.', 'nicky-me'), 'error');
             return;
         }
         
         $gateway = $gateways['nicky'];
         
         if (!$gateway->is_available()) {
-            wc_add_notice(__('Nicky.me payment method is currently unavailable.', 'nicky-payment-gateway'), 'error');
+            wc_add_notice(__('Nicky.me payment method is currently unavailable.', 'nicky-me'), 'error');
             return;
         }
 
         // Check if API is configured
         if (empty($gateway->api_key) || empty($gateway->blockchain_asset_id)) {
-            wc_add_notice(__('Payment method is not properly configured.', 'nicky-payment-gateway'), 'error');
+            wc_add_notice(__('Payment method is not properly configured.', 'nicky-me'), 'error');
             return;
         }
     }
@@ -172,7 +172,7 @@ class Nicky_Checkout_Handler {
         // Log the payment initiation
         $gateway = WC()->payment_gateways()->payment_gateways()['nicky'];
         $order->add_order_note(sprintf(
-            __('Nicky.me payment initiated. Customer will be redirected to %s', 'nicky-payment-gateway'),
+            __('Nicky.me payment initiated. Customer will be redirected to %s', 'nicky-me'),
             'https://pay.nicky.me'
         ));
     }
@@ -214,16 +214,16 @@ class Nicky_Checkout_Handler {
     private function send_payment_confirmation($order) {
         $mailer = WC()->mailer();
         $message = $mailer->wrap_message(
-            __('Payment Confirmed', 'nicky-payment-gateway'),
+            __('Payment Confirmed', 'nicky-me'),
             sprintf(
-                __('Your cryptocurrency payment for order #%s has been confirmed and is being processed.', 'nicky-payment-gateway'),
+                __('Your cryptocurrency payment for order #%s has been confirmed and is being processed.', 'nicky-me'),
                 $order->get_order_number()
             )
         );
         
         $mailer->send(
             $order->get_billing_email(),
-            sprintf(__('Payment Confirmed - Order #%s', 'nicky-payment-gateway'), $order->get_order_number()),
+            sprintf(__('Payment Confirmed - Order #%s', 'nicky-me'), $order->get_order_number()),
             $message
         );
     }
@@ -233,14 +233,14 @@ class Nicky_Checkout_Handler {
      */
     private function send_payment_completion($order) {
         // WooCommerce will handle the standard completion email
-        $order->add_order_note(__('Nicky.me payment completed successfully.', 'nicky-payment-gateway'));
+        $order->add_order_note(__('Nicky.me payment completed successfully.', 'nicky-me'));
     }
 
     /**
      * Handle payment cancellation
      */
     private function handle_payment_cancellation($order) {
-        $order->add_order_note(__('Nicky.me payment was cancelled by customer.', 'nicky-payment-gateway'));
+        $order->add_order_note(__('Nicky.me payment was cancelled by customer.', 'nicky-me'));
         
         // Optionally send cancellation email
         $this->send_cancellation_email($order);
@@ -250,7 +250,7 @@ class Nicky_Checkout_Handler {
      * Handle payment failure
      */
     private function handle_payment_failure($order) {
-        $order->add_order_note(__('Nicky.me payment failed.', 'nicky-payment-gateway'));
+        $order->add_order_note(__('Nicky.me payment failed.', 'nicky-me'));
         
         // Optionally send failure email with retry instructions
         $this->send_failure_email($order);
@@ -264,9 +264,9 @@ class Nicky_Checkout_Handler {
         $retry_url = $order->get_checkout_payment_url();
         
         $message = $mailer->wrap_message(
-            __('Payment Cancelled', 'nicky-payment-gateway'),
+            __('Payment Cancelled', 'nicky-me'),
             sprintf(
-                __('Your payment for order #%s was cancelled. You can retry your payment using this link: %s', 'nicky-payment-gateway'),
+                __('Your payment for order #%s was cancelled. You can retry your payment using this link: %s', 'nicky-me'),
                 $order->get_order_number(),
                 $retry_url
             )
@@ -274,7 +274,7 @@ class Nicky_Checkout_Handler {
         
         $mailer->send(
             $order->get_billing_email(),
-            sprintf(__('Payment Cancelled - Order #%s', 'nicky-payment-gateway'), $order->get_order_number()),
+            sprintf(__('Payment Cancelled - Order #%s', 'nicky-me'), $order->get_order_number()),
             $message
         );
     }
@@ -287,9 +287,9 @@ class Nicky_Checkout_Handler {
         $retry_url = $order->get_checkout_payment_url();
         
         $message = $mailer->wrap_message(
-            __('Payment Failed', 'nicky-payment-gateway'),
+            __('Payment Failed', 'nicky-me'),
             sprintf(
-                __('Your payment for order #%s failed. Please try again using this link: %s', 'nicky-payment-gateway'),
+                __('Your payment for order #%s failed. Please try again using this link: %s', 'nicky-me'),
                 $order->get_order_number(),
                 $retry_url
             )
@@ -297,7 +297,7 @@ class Nicky_Checkout_Handler {
         
         $mailer->send(
             $order->get_billing_email(),
-            sprintf(__('Payment Failed - Order #%s', 'nicky-payment-gateway'), $order->get_order_number()),
+            sprintf(__('Payment Failed - Order #%s', 'nicky-me'), $order->get_order_number()),
             $message
         );
     }
@@ -308,7 +308,7 @@ class Nicky_Checkout_Handler {
     public function custom_email_subject($subject, $order) {
         if ($order && $order->get_payment_method() === 'nicky') {
             if (strpos($subject, 'on-hold') !== false) {
-                return sprintf(__('Your cryptocurrency payment is being processed - Order #%s', 'nicky-payment-gateway'), $order->get_order_number());
+                return sprintf(__('Your cryptocurrency payment is being processed - Order #%s', 'nicky-me'), $order->get_order_number());
             }
         }
         return $subject;
@@ -325,12 +325,12 @@ class Nicky_Checkout_Handler {
 
         $order_id = intval($atts['order_id']);
         if (!$order_id) {
-            return '<p>' . __('Invalid order ID.', 'nicky-payment-gateway') . '</p>';
+            return '<p>' . __('Invalid order ID.', 'nicky-me') . '</p>';
         }
 
         $order = wc_get_order($order_id);
         if (!$order || $order->get_payment_method() !== 'nicky') {
-            return '<p>' . __('Order not found or not a Nicky payment.', 'nicky-payment-gateway') . '</p>';
+            return '<p>' . __('Order not found or not a Nicky payment.', 'nicky-me') . '</p>';
         }
 
         $short_id = $order->get_meta('_nicky_short_id');
@@ -339,20 +339,20 @@ class Nicky_Checkout_Handler {
         ob_start();
         ?>
         <div class="nicky-payment-status-widget">
-            <h4><?php _e('Payment Status', 'nicky-payment-gateway'); ?></h4>
-            <p><strong><?php _e('Order:', 'nicky-payment-gateway'); ?></strong> #<?php echo $order->get_order_number(); ?></p>
-            <p><strong><?php _e('Status:', 'nicky-payment-gateway'); ?></strong> <?php echo wc_get_order_status_name($status); ?></p>
+            <h4><?php _e('Payment Status', 'nicky-me'); ?></h4>
+            <p><strong><?php _e('Order:', 'nicky-me'); ?></strong> #<?php echo $order->get_order_number(); ?></p>
+            <p><strong><?php _e('Status:', 'nicky-me'); ?></strong> <?php echo wc_get_order_status_name($status); ?></p>
             
             <?php if ($short_id): ?>
-                <p><strong><?php _e('Payment ID:', 'nicky-payment-gateway'); ?></strong> <?php echo esc_html($short_id); ?></p>
+                <p><strong><?php _e('Payment ID:', 'nicky-me'); ?></strong> <?php echo esc_html($short_id); ?></p>
                 <p><a href="https://pay.nicky.me/home?paymentId=<?php echo urlencode($short_id); ?>" target="_blank" class="button">
-                    <?php _e('Check Payment on Nicky.me', 'nicky-payment-gateway'); ?>
+                    <?php _e('Check Payment on Nicky.me', 'nicky-me'); ?>
                 </a></p>
             <?php endif; ?>
             
             <?php if ($status === 'pending'): ?>
                 <div class="nicky-pending-notice">
-                    <p><?php _e('Your payment is being processed. This page will update automatically.', 'nicky-payment-gateway'); ?></p>
+                    <p><?php _e('Your payment is being processed. This page will update automatically.', 'nicky-me'); ?></p>
                 </div>
                 <?php
                 // Enqueue auto-refresh script

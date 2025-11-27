@@ -709,13 +709,13 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
         // Add helpful information - no input fields needed, data comes from billing
         echo '<div class="nicky-payment-info" style="margin-top: 15px; padding: 10px; background: #f0f8ff; border-left: 4px solid #0073aa; border-radius: 4px;">';
         echo '<p class="nicky-info-text" style="margin: 0; font-size: 14px;">';
-        echo '🔒 ' . __('You will be redirected to Nicky.me to complete your payment securely.', 'nicky-payment-gateway');
+        echo '🔒 ' . __('You will be redirected to Nicky.me to complete your payment securely.', 'nicky-me');
         echo '</p>';
         echo '</div>';
         
         // Add supported payment methods info
         echo '<div class="nicky-supported-methods" style="margin-top: 10px; text-align: center;">';
-        echo '<small style="color: #666;">💰 ' . __('Supported: Bitcoin, Ethereum, USDT and more cryptocurrencies', 'nicky-payment-gateway') . '</small>';
+        echo '<small style="color: #666;">💰 ' . __('Supported: Bitcoin, Ethereum, USDT and more cryptocurrencies', 'nicky-me') . '</small>';
         echo '</div>';
     }
 
@@ -1475,12 +1475,12 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
         
         if ($order->has_status('pending')) {
             echo '<div class="nicky-payment-pending" style="background: #f7f7f7; padding: 20px; margin: 20px 0; border-left: 4px solid #2271b1;">';
-            echo '<h3 style="margin-top: 0;">⏳ ' . __('Payment Pending', 'nicky-payment-gateway') . '</h3>';
-            echo '<p>' . __('Your payment is being processed. Please complete your payment to finalize your order.', 'nicky-payment-gateway') . '</p>';
+            echo '<h3 style="margin-top: 0;">⏳ ' . __('Payment Pending', 'nicky-me') . '</h3>';
+            echo '<p>' . __('Your payment is being processed. Please complete your payment to finalize your order.', 'nicky-me') . '</p>';
             
             if ($short_id) {
                 echo '<div style="background: white; padding: 15px; margin: 15px 0; border-radius: 4px;">';
-                echo '<p style="margin: 0;"><strong>' . __('Payment ID:', 'nicky-payment-gateway') . '</strong> <code style="background: #f0f0f0; padding: 2px 6px;">' . esc_html($short_id) . '</code></p>';
+                echo '<p style="margin: 0;"><strong>' . __('Payment ID:', 'nicky-me') . '</strong> <code style="background: #f0f0f0; padding: 2px 6px;">' . esc_html($short_id) . '</code></p>';
                 echo '</div>';
                 
                 // Try to get deposit address
@@ -1492,31 +1492,31 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
                         $asset_ticker = $address_resp['assetTicker'] ?? $blockchain_asset_id;
                         
                         echo '<div style="background: #e8f5e9; padding: 15px; margin: 15px 0; border-radius: 4px; border: 1px solid #4caf50;">';
-                        echo '<h4 style="margin-top: 0; color: #2e7d32;">💰 ' . __('Deposit Address', 'nicky-payment-gateway') . '</h4>';
-                        echo '<p><strong>' . __('Asset:', 'nicky-payment-gateway') . '</strong> ' . esc_html($asset_ticker) . '</p>';
-                        echo '<p><strong>' . __('Address:', 'nicky-payment-gateway') . '</strong><br>';
+                        echo '<h4 style="margin-top: 0; color: #2e7d32;">💰 ' . __('Deposit Address', 'nicky-me') . '</h4>';
+                        echo '<p><strong>' . __('Asset:', 'nicky-me') . '</strong> ' . esc_html($asset_ticker) . '</p>';
+                        echo '<p><strong>' . __('Address:', 'nicky-me') . '</strong><br>';
                         echo '<code style="background: white; padding: 8px; display: inline-block; margin: 5px 0; word-break: break-all; font-size: 12px;">' . esc_html($address) . '</code></p>';
-                        echo '<button type="button" onclick="navigator.clipboard.writeText(\'' . esc_js($address) . '\'); alert(\'Address copied to clipboard!\');" class="button" style="margin-top: 10px;">📋 ' . __('Copy Address', 'nicky-payment-gateway') . '</button>';
+                        echo '<button type="button" onclick="navigator.clipboard.writeText(\'' . esc_js($address) . '\'); alert(\'Address copied to clipboard!\');" class="button" style="margin-top: 10px;">📋 ' . __('Copy Address', 'nicky-me') . '</button>';
                         echo '</div>';
                     }
                 }
                 
                 echo '<p style="margin-top: 20px;"><a href="https://pay.nicky.me/home?paymentId=' . urlencode($short_id) . '" target="_blank" class="button button-primary" style="text-decoration: none;">';
-                echo '🔗 ' . __('Continue to Payment', 'nicky-payment-gateway') . '</a></p>';
+                echo '🔗 ' . __('Continue to Payment', 'nicky-me') . '</a></p>';
             }
             
             echo '<p style="margin-top: 20px; font-size: 13px; color: #666;">';
-            echo '🔄 ' . __('Payment status is automatically checked every 30 seconds by our backend system. Please refresh this page to see updates.', 'nicky-payment-gateway');
+            echo '🔄 ' . __('Payment status is automatically checked every 30 seconds by our backend system. Please refresh this page to see updates.', 'nicky-me');
             echo '</p>';
             echo '</div>';
             
             // Frontend polling disabled - all handled by backend cron job
         } elseif ($order->has_status('completed') || $order->has_status('processing')) {
             echo '<div class="nicky-payment-complete" style="background: #e8f5e9; padding: 20px; margin: 20px 0; border-left: 4px solid #4caf50;">';
-            echo '<h3 style="margin-top: 0; color: #2e7d32;">✅ ' . __('Payment Complete', 'nicky-payment-gateway') . '</h3>';
-            echo '<p>' . __('Thank you! Your payment has been received and your order is being processed.', 'nicky-payment-gateway') . '</p>';
+            echo '<h3 style="margin-top: 0; color: #2e7d32;">✅ ' . __('Payment Complete', 'nicky-me') . '</h3>';
+            echo '<p>' . __('Thank you! Your payment has been received and your order is being processed.', 'nicky-me') . '</p>';
             if ($short_id) {
-                echo '<p style="font-size: 13px; color: #666;"><strong>' . __('Payment ID:', 'nicky-payment-gateway') . '</strong> ' . esc_html($short_id) . '</p>';
+                echo '<p style="font-size: 13px; color: #666;"><strong>' . __('Payment ID:', 'nicky-me') . '</strong> ' . esc_html($short_id) . '</p>';
             }
             echo '</div>';
         }
@@ -1530,22 +1530,22 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
             $short_id = get_post_meta($order->get_id(), '_nicky_short_id', true);
             
             if ($plain_text) {
-                echo "\n" . __('Payment Instructions:', 'nicky-payment-gateway') . "\n";
-                echo __('Your cryptocurrency payment is being processed.', 'nicky-payment-gateway') . "\n";
+                echo "\n" . __('Payment Instructions:', 'nicky-me') . "\n";
+                echo __('Your cryptocurrency payment is being processed.', 'nicky-me') . "\n";
                 if ($short_id) {
-                    echo __('Payment ID:', 'nicky-payment-gateway') . ' ' . $short_id . "\n";
+                    echo __('Payment ID:', 'nicky-me') . ' ' . $short_id . "\n";
                     $payment_url = 'https://pay.nicky.me/home?paymentId=' . urlencode($short_id);
-                    echo __('You can check the status at:', 'nicky-payment-gateway') . ' ' . $payment_url . "\n";
+                    echo __('You can check the status at:', 'nicky-me') . ' ' . $payment_url . "\n";
                 }
                 echo "\n";
             } else {
-                echo '<h2>' . __('Payment Instructions', 'nicky-payment-gateway') . '</h2>';
-                echo '<p>' . __('Your cryptocurrency payment is being processed.', 'nicky-payment-gateway') . '</p>';
+                echo '<h2>' . __('Payment Instructions', 'nicky-me') . '</h2>';
+                echo '<p>' . __('Your cryptocurrency payment is being processed.', 'nicky-me') . '</p>';
                 if ($short_id) {
-                    echo '<p><strong>' . __('Payment ID:', 'nicky-payment-gateway') . '</strong> ' . esc_html($short_id) . '</p>';
+                    echo '<p><strong>' . __('Payment ID:', 'nicky-me') . '</strong> ' . esc_html($short_id) . '</p>';
                     $payment_url = 'https://pay.nicky.me/home?paymentId=' . urlencode($short_id);
                     echo '<p><a href="' . esc_url($payment_url) . '" target="_blank">';
-                    echo __('Check Payment Status', 'nicky-payment-gateway') . '</a></p>';
+                    echo __('Check Payment Status', 'nicky-me') . '</a></p>';
                 }
             }
         }
@@ -1557,7 +1557,7 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
     public function add_cron_schedules($schedules) {
         $schedules['every_30_seconds'] = array(
             'interval' => 30,
-            'display' => __('Every 30 Seconds', 'nicky-payment-gateway')
+            'display' => __('Every 30 Seconds', 'nicky-me')
         );
         return $schedules;
     }
@@ -1654,7 +1654,7 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
             // Update order if payment is finished
             if ($status === 'Finished' && $is_paid) {
                 $order->payment_complete();
-                $order->update_status('processing', __('Payment completed via Nicky (backend cron)', 'nicky-payment-gateway'));
+                $order->update_status('processing', __('Payment completed via Nicky (backend cron)', 'nicky-me'));
                 $order->add_order_note(sprintf(
                     'Payment completed via backend status check (ShortId: %s)',
                     $short_id

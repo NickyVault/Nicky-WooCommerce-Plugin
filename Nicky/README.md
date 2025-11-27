@@ -6,7 +6,7 @@ A complete WooCommerce payment plugin for secure online payments powered by Nick
 
 1. **Copy plugin files:**
    ```bash
-   cp -r nicky-woocommerce-plugin/ /path/to/wordpress/wp-content/plugins/nicky-payment-gateway/
+   cp -r nicky-woocommerce-plugin/ /path/to/wordpress/wp-content/plugins/nicky-me/
    ```
 
 2. **Activate plugin:**
