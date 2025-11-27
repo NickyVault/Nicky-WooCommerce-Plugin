@@ -31,12 +31,12 @@ class Nicky_Payment_Dashboard_Widget {
         
         wp_add_dashboard_widget(
             'nicky_payment_validation_widget',
-            'Nicky.me - Payment Validation Required',
+            'Nicky.me Payments',
             array($this, 'display_dashboard_widget'),
             null,
             null,
             'normal',
-            'high'
+            'default'
         );
     }
     
@@ -52,7 +52,7 @@ class Nicky_Payment_Dashboard_Widget {
         if (empty($validation_orders)) {
             echo '<p class="nicky-no-validation">✅ No orders requiring payment validation.</p>';
         } else {
-            echo '<p class="nicky-validation-info">⚠️ <strong>' . count($validation_orders) . '</strong> order(s) require payment validation:</p>';
+            echo '<p class="nicky-validation-info">ℹ️ <strong>' . count($validation_orders) . '</strong> order(s) require payment validation:</p>';
             
             echo '<table class="nicky-validation-table">';
             echo '<thead>';
