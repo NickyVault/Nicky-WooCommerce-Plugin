@@ -60,8 +60,8 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
         
         // Add AJAX handlers
-        add_action('wp_ajax_check_nicky_payment_status', array($this, 'ajax_check_payment_status'));
-        add_action('wp_ajax_nopriv_check_nicky_payment_status', array($this, 'ajax_check_payment_status'));
+        add_action('wp_ajax_nickym_check_nicky_payment_status', array($this, 'ajax_check_payment_status'));
+        add_action('wp_ajax_nopriv_nickym_check_nicky_payment_status', array($this, 'ajax_check_payment_status'));
         
         // Add support for WooCommerce Blocks
         add_action('woocommerce_blocks_loaded', array($this, 'register_block_support'));
