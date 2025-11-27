@@ -61,6 +61,65 @@ class Nicky_Checkout_Handler {
                     'error_occurred' => __('An error occurred. Please try again.', 'nicky-payment-gateway'),
                 )
             ));
+
+            // Add inline CSS for checkout instructions
+            $css = '
+                .nicky-checkout-instructions {
+                    margin-top: 15px;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    border-left: 4px solid #007cba;
+                }
+                
+                .nicky-payment-flow h4 {
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    color: #333;
+                    font-size: 16px;
+                }
+                
+                .nicky-steps {
+                    margin-bottom: 15px;
+                }
+                
+                .nicky-steps .step {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 10px;
+                    padding: 8px 0;
+                }
+                
+                .nicky-steps .step-number {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 24px;
+                    height: 24px;
+                    background: #007cba;
+                    color: white;
+                    border-radius: 50%;
+                    font-size: 12px;
+                    font-weight: bold;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                }
+                
+                .nicky-steps .step-text {
+                    color: #555;
+                    font-size: 14px;
+                }
+                
+                .nicky-security-note {
+                    text-align: center;
+                    color: #666;
+                    font-style: italic;
+                    margin-top: 15px;
+                    font-size: 13px;
+                }
+            ';
+            
+            wp_add_inline_style('woocommerce-general', $css);
         }
     }
 
@@ -295,12 +354,14 @@ class Nicky_Checkout_Handler {
                 <div class="nicky-pending-notice">
                     <p><?php _e('Your payment is being processed. This page will update automatically.', 'nicky-payment-gateway'); ?></p>
                 </div>
-                <script>
-                    // Auto-refresh every 30 seconds for pending orders
+                <?php
+                // Enqueue auto-refresh script
+                wp_add_inline_script('jquery', '
                     setTimeout(function() {
                         location.reload();
                     }, 30000);
-                </script>
+                ');
+                ?>
             <?php endif; ?>
         </div>
         <?php

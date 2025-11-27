@@ -11,6 +11,7 @@ if (!defined('ABSPATH')) {
 
 // Add admin menu for debugging
 add_action('admin_menu', 'nicky_debug_menu');
+add_action('admin_enqueue_scripts', 'nicky_debug_enqueue_scripts');
 
 function nicky_debug_menu() {
     add_submenu_page(
@@ -23,6 +24,22 @@ function nicky_debug_menu() {
     );
 }
 
+function nicky_debug_enqueue_scripts($hook) {
+    if ($hook !== 'woocommerce_page_nicky-debug') {
+        return;
+    }
+    
+    $css = '
+        .nicky-debug .success { color: green; }
+        .nicky-debug .error { color: red; }
+        .nicky-debug .warning { color: orange; }
+        .nicky-debug .debug-section { margin: 20px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #0073aa; }
+        .nicky-debug pre { background: #fff; padding: 10px; border: 1px solid #ccd0d4; overflow: auto; }
+    ';
+    
+    wp_add_inline_style('wp-admin', $css);
+}
+
 function nicky_debug_page() {
     if (!class_exists('WooCommerce')) {
         echo '<div class="error"><p>WooCommerce is not installed or active</p></div>';
@@ -31,14 +48,6 @@ function nicky_debug_page() {
 
     echo '<div class="wrap">';
     echo '<h1>Nicky.me Payment Gateway - Debug</h1>';
-    
-    echo '<style>
-        .nicky-debug .success { color: green; }
-        .nicky-debug .error { color: red; }
-        .nicky-debug .warning { color: orange; }
-        .nicky-debug .debug-section { margin: 20px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #0073aa; }
-        .nicky-debug pre { background: #fff; padding: 10px; border: 1px solid #ccd0d4; overflow: auto; }
-    </style>';
     
     echo '<div class="nicky-debug">';
 

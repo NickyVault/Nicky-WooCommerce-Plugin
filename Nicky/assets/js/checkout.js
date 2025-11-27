@@ -278,38 +278,3 @@ jQuery(document).ready(function($) {
             return window.location.href;
         }
     });
-
-    // Add some basic styling
-    $('<style>')
-        .prop('type', 'text/css')
-        .html(`
-            .wc-credit-card-form .form-row {
-                margin-bottom: 15px;
-            }
-            
-            .wc-credit-card-form input[type="text"] {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                font-size: 14px;
-            }
-            
-            .wc-credit-card-form input[type="text"]:focus {
-                border-color: #007cba;
-                outline: none;
-                box-shadow: 0 0 0 1px #007cba;
-            }
-            
-            .wc-credit-card-form label {
-                display: block;
-                margin-bottom: 5px;
-                font-weight: 600;
-            }
-            
-            .wc-credit-card-form .required {
-                color: #e2401c;
-            }
-        `)
-        .appendTo('head');
-});

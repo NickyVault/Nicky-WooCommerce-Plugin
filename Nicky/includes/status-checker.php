@@ -137,7 +137,7 @@ function nicky_payment_gateway_display_status() {
     echo '</div>';
     
     // Add CSS
-    echo '<style>
+    $css = '
         .nicky-status-check {
             background: #fff;
             border: 1px solid #ccd0d4;
@@ -177,7 +177,9 @@ function nicky_payment_gateway_display_status() {
             color: #721c24;
             border: 1px solid #f5c2c7;
         }
-    </style>';
+    ';
+    
+    wp_add_inline_style('wp-admin', $css);
 }
 
 // Add to admin menu

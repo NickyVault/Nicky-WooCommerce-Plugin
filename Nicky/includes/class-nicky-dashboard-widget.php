@@ -75,9 +75,6 @@ class Nicky_Payment_Dashboard_Widget {
         }
         
         echo '</div>';
-        
-        // Add CSS for the widget
-        $this->add_widget_styles();
     }
     
     /**
@@ -219,7 +216,7 @@ class Nicky_Payment_Dashboard_Widget {
     }
     
     /**
-     * Enqueue scripts for dashboard widget
+     * Enqueue scripts and styles for dashboard widget
      */
     public function enqueue_dashboard_scripts($hook) {
         // Only load on dashboard
@@ -227,70 +224,8 @@ class Nicky_Payment_Dashboard_Widget {
             return;
         }
         
-        // Add inline JavaScript for AJAX functionality
-        $nonce = wp_create_nonce('nicky_dashboard_nonce');
-        ?>
-        <script type="text/javascript">
-        jQuery(document).ready(function($) {
-            $('.nicky-mark-paid').on('click', function(e) {
-                e.preventDefault();
-                
-                var button = $(this);
-                var orderId = button.data('order-id');
-                var originalText = button.text();
-                
-                if (!confirm('Are you sure you want to mark this order as paid?')) {
-                    return;
-                }
-                
-                button.prop('disabled', true).text('Processing...');
-                
-                $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'nicky_mark_order_paid',
-                        order_id: orderId,
-                        nonce: '<?php echo $nonce; ?>'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Remove the row or refresh the widget
-                            button.closest('tr').fadeOut(function() {
-                                $(this).remove();
-                                
-                                // Check if table is empty
-                                var remainingRows = $('.nicky-validation-table tbody tr').length;
-                                if (remainingRows === 0) {
-                                    $('#nicky-dashboard-widget').html('<p class="nicky-no-validation">✅ No orders requiring payment validation.</p>');
-                                }
-                            });
-                            
-                            // Show success message
-                            $('<div class="notice notice-success is-dismissible"><p>' + response.data.message + '</p></div>')
-                                .insertAfter('.wp-header-end');
-                        } else {
-                            alert('Error: ' + response.data);
-                            button.prop('disabled', false).text(originalText);
-                        }
-                    },
-                    error: function() {
-                        alert('An error occurred while processing the request.');
-                        button.prop('disabled', false).text(originalText);
-                    }
-                });
-            });
-        });
-        </script>
-        <?php
-    }
-    
-    /**
-     * Add CSS styles for the widget
-     */
-    private function add_widget_styles() {
-        ?>
-        <style type="text/css">
+        // Add inline CSS for the widget
+        $css = '
         .nicky-validation-table {
             width: 100%;
             border-collapse: collapse;
@@ -346,9 +281,68 @@ class Nicky_Payment_Dashboard_Widget {
         #nicky-dashboard-widget a:hover {
             text-decoration: underline;
         }
-        </style>
-        <?php
+        ';
+        
+        wp_add_inline_style('wp-admin', $css);
+        
+        // Add inline JavaScript for AJAX functionality
+        $nonce = wp_create_nonce('nicky_dashboard_nonce');
+        $js = "
+        jQuery(document).ready(function($) {
+            $('.nicky-mark-paid').on('click', function(e) {
+                e.preventDefault();
+                
+                var button = $(this);
+                var orderId = button.data('order-id');
+                var originalText = button.text();
+                
+                if (!confirm('Are you sure you want to mark this order as paid?')) {
+                    return;
+                }
+                
+                button.prop('disabled', true).text('Processing...');
+                
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'nicky_mark_order_paid',
+                        order_id: orderId,
+                        nonce: '" . $nonce . "'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Remove the row or refresh the widget
+                            button.closest('tr').fadeOut(function() {
+                                $(this).remove();
+                                
+                                // Check if table is empty
+                                var remainingRows = $('.nicky-validation-table tbody tr').length;
+                                if (remainingRows === 0) {
+                                    $('#nicky-dashboard-widget').html('<p class=\"nicky-no-validation\">✅ No orders requiring payment validation.</p>');
+                                }
+                            });
+                            
+                            // Show success message
+                            $('<div class=\"notice notice-success is-dismissible\"><p>' + response.data.message + '</p></div>')
+                                .insertAfter('.wp-header-end');
+                        } else {
+                            alert('Error: ' + response.data);
+                            button.prop('disabled', false).text(originalText);
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while processing the request.');
+                        button.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
+        });
+        ";
+        
+        wp_add_inline_script('jquery', $js);
     }
+    
 }
 
 // Initialize the dashboard widget
