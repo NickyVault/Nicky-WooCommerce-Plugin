@@ -26,12 +26,18 @@ Nicky.me is a secure and reliable cryptocurrency payment gateway for your WooCom
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/nicky` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/nicky-payment-gateway` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to WooCommerce > Settings > Payments and configure the Nicky.me Payment Gateway.
-4. Enter your API key from your Nicky.me account.
-5. Select your preferred settlement currency.
+4. Enter your API key from your Nicky.me account (create an account at https://nicky.me if you don't have one).
+5. Select your preferred settlement currency from the available blockchain assets.
 6. Save your settings and start accepting cryptocurrency payments!
+
+**Requirements:**
+* WordPress 5.0 or higher
+* WooCommerce 5.0 or higher
+* PHP 7.4 or higher
+* A Nicky.me account with API access
 
 == Frequently Asked Questions ==
 
@@ -46,12 +52,6 @@ The plugin supports Bitcoin, Ethereum, USDT and other cryptocurrencies available
 = Is the plugin compatible with WooCommerce Blocks? =
 
 Yes, the plugin is fully compatible with the new WooCommerce Blocks checkout.
-
-== Screenshots ==
-
-1. Payment gateway settings page
-2. Checkout page with Nicky.me payment option
-3. Payment processing page
 
 == Changelog ==
 
