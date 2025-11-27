@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Status Checker
- * Prüft ob das Plugin korrekt installiert und konfiguriert ist
+ * Checks if the plugin is correctly installed and configured
  */
 
 // Prevent direct access

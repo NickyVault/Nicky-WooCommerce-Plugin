@@ -83,14 +83,14 @@ function nicky_payment_gateway_init() {
         include_once NICKY_PAYMENT_GATEWAY_PLUGIN_PATH . 'includes/class-nicky-dashboard-widget.php';
     }
 
-    // Blocks-Support laden - beide Versionen für maximale Kompatibilität
+    // Load Blocks support - both versions for maximum compatibility
     if ( function_exists( 'register_block_type' ) ) {
         include_once NICKY_PAYMENT_GATEWAY_PLUGIN_PATH . 'includes/class-nicky-payment-blocks-simple.php';
         
-        // Store API Integration für WooCommerce Blocks Checkout
+        // Store API Integration for WooCommerce Blocks Checkout
         include_once NICKY_PAYMENT_GATEWAY_PLUGIN_PATH . 'includes/class-nicky-store-api.php';
         
-        // Auch die erweiterte Version laden wenn verfügbar
+        // Also load the extended version if available
         if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
             include_once NICKY_PAYMENT_GATEWAY_PLUGIN_PATH . 'includes/class-nicky-payment-blocks.php';
         }

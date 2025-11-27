@@ -1,7 +1,7 @@
 <?php
 /**
  * Nicky Payment Gateway Checkout Handler
- * Erweiterte Checkout-Funktionalität und Benutzerführung
+ * Extended checkout functionality and user guidance
  *
  * @package NickyPaymentGateway
  */
