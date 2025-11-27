@@ -167,7 +167,7 @@ class Nicky_Payment_Dashboard_Widget {
      */
     public function ajax_mark_order_paid() {
         // Check nonce
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'nicky_dashboard_nonce')) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'] ?? '')), 'nicky_dashboard_nonce')) {
             wp_send_json_error('Invalid nonce');
             return;
         }

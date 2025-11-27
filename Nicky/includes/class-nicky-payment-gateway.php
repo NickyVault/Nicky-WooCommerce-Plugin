@@ -300,7 +300,7 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
         $api_key = $this->get_option('api_key', '');
         if (empty($api_key)) {
             // Try to get the API key from POST data if we're in the process of removing it
-            $api_key = $_POST['woocommerce_nicky_api_key'] ?? '';
+            $api_key = sanitize_text_field($_POST['woocommerce_nicky_api_key'] ?? '');
         }
         
         if (empty($api_key)) {
@@ -634,7 +634,7 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
         
         // Check if we're on WooCommerce settings page
         if (strpos($hook_suffix, 'wc-settings') === false && 
-            (!isset($_GET['page']) || $_GET['page'] !== 'wc-settings')) {
+            (!isset($_GET['page']) || sanitize_key($_GET['page']) !== 'wc-settings')) {
             return;
         }
 
@@ -1088,9 +1088,9 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
      */
     public function webhook_handler() {
         // Log webhook call for debugging
-        error_log('Nicky Webhook Handler called. Method: ' . $_SERVER['REQUEST_METHOD']);
-        error_log('Nicky Webhook GET params: ' . print_r($_GET, true));
-        error_log('Nicky Webhook POST params: ' . print_r($_POST, true));
+        error_log('Nicky Webhook Handler called. Method: ' . sanitize_key($_SERVER['REQUEST_METHOD']));
+        error_log('Nicky Webhook GET params: ' . print_r(array_map('sanitize_text_field', $_GET), true));
+        error_log('Nicky Webhook POST params: ' . print_r(array_map('sanitize_text_field', $_POST), true));
         
         $raw_body = file_get_contents('php://input');
         error_log('Nicky Webhook raw body: ' . $raw_body);
@@ -1099,7 +1099,7 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
 
         // If JSON decode fails, try to get data from GET/POST
         if (empty($data)) {
-            $data = $_GET + $_POST;
+            $data = array_map('sanitize_text_field', $_GET + $_POST);
         }
 
         // Log parsed data

@@ -107,7 +107,7 @@ class Nicky_Checkout_Handler {
         // Add order meta for tracking
         $order->update_meta_data('_nicky_payment_initiated_at', current_time('mysql'));
         $order->update_meta_data('_nicky_payment_customer_ip', WC_Geolocation::get_ip_address());
-        $order->update_meta_data('_nicky_payment_user_agent', isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
+        $order->update_meta_data('_nicky_payment_user_agent', isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field($_SERVER['HTTP_USER_AGENT']) : '');
         $order->save();
 
         // Log the payment initiation
