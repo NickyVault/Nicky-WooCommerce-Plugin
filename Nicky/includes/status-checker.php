@@ -103,7 +103,7 @@ function nicky_payment_gateway_display_status() {
         echo '<h4>Errors:</h4>';
         echo '<ul>';
         foreach ($status['errors'] as $error) {
-            echo '<li>❌ ' . $error . '</li>';
+            echo '<li>❌ ' . esc_html($error) . '</li>';
         }
         echo '</ul>';
         echo '</div>';
@@ -115,7 +115,7 @@ function nicky_payment_gateway_display_status() {
         echo '<h4>Warnings:</h4>';
         echo '<ul>';
         foreach ($status['warnings'] as $warning) {
-            echo '<li>⚠️ ' . $warning . '</li>';
+            echo '<li>⚠️ ' . esc_html($warning) . '</li>';
         }
         echo '</ul>';
         echo '</div>';
@@ -201,7 +201,7 @@ add_action('admin_notices', function() {
     if (!empty($status['errors'])) {
         echo '<div class="notice notice-error is-dismissible">';
         echo '<p><strong>Nicky.me:</strong> There are critical errors that need to be fixed.</p>';
-        echo '<p><a href="' . admin_url('tools.php?page=nicky-payment-status') . '">Check Status</a></p>';
+        echo '<p><a href="' . esc_url(admin_url('tools.php?page=nicky-payment-status')) . '">Check Status</a></p>';
         echo '</div>';
     }
 });

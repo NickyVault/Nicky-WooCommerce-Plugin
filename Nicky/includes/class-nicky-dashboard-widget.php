@@ -89,8 +89,8 @@ class Nicky_Payment_Dashboard_Widget {
         
         // Order number with link
         echo '<td>';
-        echo '<a href="' . admin_url('post.php?post=' . $order_id . '&action=edit') . '" target="_blank">';
-        echo '<strong>#' . $order->get_order_number() . '</strong>';
+        echo '<a href="' . esc_url(admin_url('post.php?post=' . $order_id . '&action=edit')) . '" target="_blank">';
+        echo '<strong>#' . esc_html($order->get_order_number()) . '</strong>';
         echo '</a>';
         if ($short_id) {
             echo '<br><small>ID: ' . esc_html($short_id) . '</small>';
@@ -99,7 +99,7 @@ class Nicky_Payment_Dashboard_Widget {
         
         // Amount
         echo '<td>';
-        echo '<strong>' . $order->get_formatted_order_total() . '</strong>';
+        echo '<strong>' . esc_html($order->get_formatted_order_total()) . '</strong>';
         echo '</td>';
         
         // Customer
@@ -113,14 +113,14 @@ class Nicky_Payment_Dashboard_Widget {
         
         // Date
         echo '<td>';
-        echo $order->get_date_created()->format('Y-m-d H:i');
+        echo esc_html($order->get_date_created()->format('Y-m-d H:i'));
         echo '</td>';
         
         // Actions
         echo '<td class="nicky-actions">';
         
         // Mark as Paid button
-        echo '<button class="button button-primary nicky-mark-paid" data-order-id="' . $order_id . '">';
+        echo '<button class="button button-primary nicky-mark-paid" data-order-id="' . esc_attr($order_id) . '">';
         echo '✓ Mark Paid';
         echo '</button>';
         

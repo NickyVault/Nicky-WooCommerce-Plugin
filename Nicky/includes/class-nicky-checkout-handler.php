@@ -171,6 +171,7 @@ class Nicky_Checkout_Handler {
 
         // Log the payment initiation
         $gateway = WC()->payment_gateways()->payment_gateways()['nicky'];
+        /* translators: %s: URL to Nicky.me */
         $order->add_order_note(sprintf(
             __('Nicky.me payment initiated. Customer will be redirected to %s', 'nicky-me'),
             'https://pay.nicky.me'
@@ -215,6 +216,7 @@ class Nicky_Checkout_Handler {
         $mailer = WC()->mailer();
         $message = $mailer->wrap_message(
             __('Payment Confirmed', 'nicky-me'),
+            /* translators: %s: order number */
             sprintf(
                 __('Your cryptocurrency payment for order #%s has been confirmed and is being processed.', 'nicky-me'),
                 $order->get_order_number()
@@ -223,6 +225,7 @@ class Nicky_Checkout_Handler {
         
         $mailer->send(
             $order->get_billing_email(),
+            /* translators: %s: order number */
             sprintf(__('Payment Confirmed - Order #%s', 'nicky-me'), $order->get_order_number()),
             $message
         );
@@ -265,8 +268,9 @@ class Nicky_Checkout_Handler {
         
         $message = $mailer->wrap_message(
             __('Payment Cancelled', 'nicky-me'),
+            /* translators: %1$s: order number, %2$s: retry URL */
             sprintf(
-                __('Your payment for order #%s was cancelled. You can retry your payment using this link: %s', 'nicky-me'),
+                __('Your payment for order #%1$s was cancelled. You can retry your payment using this link: %2$s', 'nicky-me'),
                 $order->get_order_number(),
                 $retry_url
             )
@@ -274,6 +278,7 @@ class Nicky_Checkout_Handler {
         
         $mailer->send(
             $order->get_billing_email(),
+            /* translators: %s: order number */
             sprintf(__('Payment Cancelled - Order #%s', 'nicky-me'), $order->get_order_number()),
             $message
         );
@@ -288,8 +293,9 @@ class Nicky_Checkout_Handler {
         
         $message = $mailer->wrap_message(
             __('Payment Failed', 'nicky-me'),
+            /* translators: %1$s: order number, %2$s: retry URL */
             sprintf(
-                __('Your payment for order #%s failed. Please try again using this link: %s', 'nicky-me'),
+                __('Your payment for order #%1$s failed. Please try again using this link: %2$s', 'nicky-me'),
                 $order->get_order_number(),
                 $retry_url
             )
@@ -297,6 +303,7 @@ class Nicky_Checkout_Handler {
         
         $mailer->send(
             $order->get_billing_email(),
+            /* translators: %s: order number */
             sprintf(__('Payment Failed - Order #%s', 'nicky-me'), $order->get_order_number()),
             $message
         );
@@ -308,6 +315,7 @@ class Nicky_Checkout_Handler {
     public function custom_email_subject($subject, $order) {
         if ($order && $order->get_payment_method() === 'nicky') {
             if (strpos($subject, 'on-hold') !== false) {
+                /* translators: %s: order number */
                 return sprintf(__('Your cryptocurrency payment is being processed - Order #%s', 'nicky-me'), $order->get_order_number());
             }
         }
@@ -339,20 +347,20 @@ class Nicky_Checkout_Handler {
         ob_start();
         ?>
         <div class="nicky-payment-status-widget">
-            <h4><?php _e('Payment Status', 'nicky-me'); ?></h4>
-            <p><strong><?php _e('Order:', 'nicky-me'); ?></strong> #<?php echo $order->get_order_number(); ?></p>
-            <p><strong><?php _e('Status:', 'nicky-me'); ?></strong> <?php echo wc_get_order_status_name($status); ?></p>
+            <h4><?php esc_html_e('Payment Status', 'nicky-me'); ?></h4>
+            <p><strong><?php esc_html_e('Order:', 'nicky-me'); ?></strong> #<?php echo esc_html($order->get_order_number()); ?></p>
+            <p><strong><?php esc_html_e('Status:', 'nicky-me'); ?></strong> <?php echo esc_html(wc_get_order_status_name($status)); ?></p>
             
             <?php if ($short_id): ?>
-                <p><strong><?php _e('Payment ID:', 'nicky-me'); ?></strong> <?php echo esc_html($short_id); ?></p>
+                <p><strong><?php esc_html_e('Payment ID:', 'nicky-me'); ?></strong> <?php echo esc_html($short_id); ?></p>
                 <p><a href="https://pay.nicky.me/home?paymentId=<?php echo urlencode($short_id); ?>" target="_blank" class="button">
-                    <?php _e('Check Payment on Nicky.me', 'nicky-me'); ?>
+                    <?php esc_html_e('Check Payment on Nicky.me', 'nicky-me'); ?>
                 </a></p>
             <?php endif; ?>
             
             <?php if ($status === 'pending'): ?>
                 <div class="nicky-pending-notice">
-                    <p><?php _e('Your payment is being processed. This page will update automatically.', 'nicky-me'); ?></p>
+                    <p><?php esc_html_e('Your payment is being processed. This page will update automatically.', 'nicky-me'); ?></p>
                 </div>
                 <?php
                 // Enqueue auto-refresh script

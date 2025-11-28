@@ -50,7 +50,7 @@ function nicky_debug_gateway_status() {
         echo '<p>✅ Nicky.me gateway is available</p>';
         $gateway = $available_gateways['nicky'];
         echo '<p>Gateway enabled: ' . ($gateway->enabled === 'yes' ? 'Yes' : 'No') . '</p>';
-        echo '<p>Gateway title: ' . $gateway->title . '</p>';
+        echo '<p>Gateway title: ' . esc_html($gateway->title) . '</p>';
     } else {
         echo '<p>❌ Nicky.me gateway is NOT available</p>';
         
@@ -58,7 +58,7 @@ function nicky_debug_gateway_status() {
         $all_gateways = WC()->payment_gateways->payment_gateways();
         echo '<p>All registered gateways:</p><ul>';
         foreach ($all_gateways as $id => $gateway) {
-            echo '<li>' . $id . ' (' . get_class($gateway) . ') - Enabled: ' . ($gateway->enabled === 'yes' ? 'Yes' : 'No') . '</li>';
+            echo '<li>' . esc_html($id) . ' (' . esc_html(get_class($gateway)) . ') - Enabled: ' . ($gateway->enabled === 'yes' ? 'Yes' : 'No') . '</li>';
         }
         echo '</ul>';
     }
@@ -66,7 +66,7 @@ function nicky_debug_gateway_status() {
     // Check gateway settings
     $settings = get_option('woocommerce_nicky_settings', array());
     echo '<p>Gateway settings:</p>';
-    echo '<pre>' . print_r($settings, true) . '</pre>';
+    echo '<pre>' . esc_html(var_export($settings, true)) . '</pre>';
     
     echo '</div>';
 }

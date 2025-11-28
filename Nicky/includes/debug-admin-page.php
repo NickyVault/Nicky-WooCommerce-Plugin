@@ -55,7 +55,7 @@ function nicky_debug_page() {
     echo '<div class="debug-section">';
     echo '<h2>1. WooCommerce Status</h2>';
     echo '<p class="success">✓ WooCommerce is loaded</p>';
-    echo '<p>Version: ' . WC_VERSION . '</p>';
+    echo '<p>Version: ' . esc_html(WC_VERSION) . '</p>';
     echo '</div>';
 
     // 2. Gateway Registration
@@ -103,7 +103,7 @@ function nicky_debug_page() {
     foreach ($payment_gateways as $id => $gateway) {
         $enabled = ($gateway->enabled === 'yes') ? 'Ja' : 'Nein';
         $available = $gateway->is_available() ? 'Ja' : 'Nein';
-        echo '<li>' . esc_html($id) . ' - ' . esc_html($gateway->get_title()) . ' (Enabled: ' . $enabled . ', Available: ' . $available . ')</li>';
+        echo '<li>' . esc_html($id) . ' - ' . esc_html($gateway->get_title()) . ' (Enabled: ' . esc_html($enabled) . ', Available: ' . esc_html($available) . ')</li>';
     }
     echo '</ul>';
     echo '</div>';
@@ -178,7 +178,7 @@ function nicky_debug_page() {
     
     echo '<p><strong>Manual steps:</strong></p>';
     echo '<ol>';
-    echo '<li>Go to <a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=nicky') . '">WooCommerce > Settings > Payments > Nicky.me</a></li>';
+    echo '<li>Go to <a href="' . esc_url(admin_url('admin.php?page=wc-settings&tab=checkout&section=nicky')) . '">WooCommerce > Settings > Payments > Nicky.me</a></li>';
     echo '<li>Activate the gateway</li>';
     echo '<li>Set it to test mode for initial tests</li>';
     echo '<li>Add items to cart and test the checkout</li>';
