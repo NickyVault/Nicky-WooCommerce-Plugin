@@ -90,11 +90,6 @@ class Nicky_Payment_Gateway_Admin {
                 </div>
 
                 <div class="nicky-admin-section">
-                    <h2>Statistics</h2>
-                    <?php $this->display_statistics(); ?>
-                </div>
-
-                <div class="nicky-admin-section">
                     <h2>Configuration</h2>
                     <?php $this->display_gateway_configuration(); ?>
                 </div>
@@ -259,81 +254,6 @@ class Nicky_Payment_Gateway_Admin {
         echo '</div>';
         
         echo '</div>';
-    }
-
-    /**
-     * Display statistics
-     */
-    private function display_statistics() {
-        global $wpdb;
-
-        $table_name = $wpdb->prefix . 'nicky_payment_transactions';
-
-        // Get statistics with caching
-        $cache_key_total = 'nicky_total_transactions';
-        $total_transactions = wp_cache_get($cache_key_total);
-        if ($total_transactions === false) {
-            $total_transactions = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s", $table_name ) );
-            wp_cache_set($cache_key_total, $total_transactions, '', 300); // Cache for 5 minutes
-        }
-        
-        $cache_key_successful = 'nicky_successful_transactions';
-        $successful_transactions = wp_cache_get($cache_key_successful);
-        if ($successful_transactions === false) {
-            $successful_transactions = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s WHERE payment_status = 'completed'", $table_name ) );
-            wp_cache_set($cache_key_successful, $successful_transactions, '', 300);
-        }
-        
-        $cache_key_amount = 'nicky_total_amount';
-        $total_amount = wp_cache_get($cache_key_amount);
-        if ($total_amount === false) {
-            $total_amount = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(amount) FROM %s WHERE payment_status = 'completed'", $table_name ) );
-            wp_cache_set($cache_key_amount, $total_amount, '', 300);
-        }
-        
-        $cache_key_today = 'nicky_today_transactions';
-        $today_transactions = wp_cache_get($cache_key_today);
-        if ($today_transactions === false) {
-            $today_transactions = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s WHERE DATE(created_at) = %s", $table_name, gmdate('Y-m-d') ) );
-            wp_cache_set($cache_key_today, $today_transactions, '', 300);
-        }
-
-        echo '<div class="nicky-stats-grid">';
-        
-        echo '<div class="nicky-stat-item">';
-        echo '<div class="stat-number">' . number_format($total_transactions) . '</div>';
-        echo '<div class="stat-label">' . esc_html(__('Total Transactions', 'nicky-me')) . '</div>';
-        echo '</div>';
-
-        echo '<div class="nicky-stat-item">';
-        echo '<div class="stat-number">' . number_format($successful_transactions) . '</div>';
-        echo '<div class="stat-label">' . esc_html(__('Successful Payments', 'nicky-me')) . '</div>';
-        echo '</div>';
-
-        echo '<div class="nicky-stat-item">';
-        echo '<div class="stat-number">' . esc_html(wc_price($total_amount)) . '</div>';
-        echo '<div class="stat-label">' . esc_html(__('Total Revenue', 'nicky-me')) . '</div>';
-        echo '</div>';
-
-        echo '<div class="nicky-stat-item">';
-        echo '<div class="stat-number">' . number_format($today_transactions) . '</div>';
-        echo '<div class="stat-label">' . esc_html(__('Today\'s Transactions', 'nicky-me')) . '</div>';
-        echo '</div>';
-
-        echo '</div>';
-
-        // Success rate
-        if ($total_transactions > 0) {
-            $success_rate = ($successful_transactions / $total_transactions) * 100;
-            echo '<div class="nicky-success-rate">';
-            echo '<h3>' . esc_html(__('Success Rate', 'nicky-me')) . '</h3>';
-            echo '<div class="progress-bar">';
-            echo '<div class="progress-fill" style="width: ' . esc_html($success_rate) . '%"></div>';
-            echo '</div>';
-            /* translators: %s: success rate percentage */
-            echo '<p>' . esc_html(sprintf(__('%s%% of transactions successful', 'nicky-me'), number_format($success_rate, 1))) . '</p>';
-            echo '</div>';
-        }
     }
 }
 
