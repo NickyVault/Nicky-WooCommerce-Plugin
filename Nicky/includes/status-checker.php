@@ -35,7 +35,13 @@ function nicky_payment_gateway_status_check() {
     // Check if database table exists
     global $wpdb;
     $table_name = $wpdb->prefix . 'nicky_payment_transactions';
-    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
+    $cache_key = 'nicky_table_exists';
+    $table_exists = wp_cache_get($cache_key);
+    if ($table_exists === false) {
+        $table_exists = $wpdb->get_var( "SHOW TABLES LIKE '" . esc_sql($table_name) . "'" ) == $table_name;
+        wp_cache_set($cache_key, $table_exists, '', 3600); // Cache for 1 hour
+    }
+    if ($table_exists) {
         $status['database_created'] = true;
     } else {
         $status['warnings'][] = 'Database table has not been created yet.';

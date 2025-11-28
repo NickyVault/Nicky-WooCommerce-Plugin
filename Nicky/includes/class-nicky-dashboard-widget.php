@@ -207,7 +207,9 @@ class Nicky_Payment_Dashboard_Widget {
         $order->delete_meta_data('_nicky_requires_validation');
         $order->save();
         
-        error_log('Nicky Dashboard: Order #' . $order_id . ' manually marked as paid by user ' . get_current_user_id());
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('Nicky Dashboard: Order #' . $order_id . ' manually marked as paid by user ' . get_current_user_id());
+        }
         
         wp_send_json_success(array(
             'message' => 'Order #' . $order->get_order_number() . ' has been marked as paid.',

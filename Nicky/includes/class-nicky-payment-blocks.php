@@ -3,7 +3,7 @@ if ( ! defined('ABSPATH') ) exit;
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
-final class WC_Gateway_Nicky_Blocks_Support extends AbstractPaymentMethodType {
+final class Nicky_WC_Gateway_Blocks_Support extends AbstractPaymentMethodType {
     
     protected $name = 'nicky';
     
@@ -77,7 +77,7 @@ class Nicky_Payment_Blocks_Gateway {
             add_action(
                 'woocommerce_blocks_payment_method_type_registration',
                 function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
-                    $payment_method_registry->register( new WC_Gateway_Nicky_Blocks_Support );
+                    $payment_method_registry->register( new Nicky_WC_Gateway_Blocks_Support );
                 }
             );
         }

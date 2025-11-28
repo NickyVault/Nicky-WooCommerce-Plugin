@@ -147,7 +147,7 @@ function nicky_debug_page() {
         if (isset($safe_settings['api_key']) && !empty($safe_settings['api_key'])) {
             $safe_settings['api_key'] = '***configured***';
         }
-        echo '<pre>' . esc_html(print_r($safe_settings, true)) . '</pre>';
+        echo '<pre>' . esc_html(var_export($safe_settings, true)) . '</pre>';
     } else {
         echo '<p class="error">✗ No gateway settings found</p>';
     }
@@ -157,7 +157,7 @@ function nicky_debug_page() {
     echo '<div class="debug-section">';
     echo '<h2>6. Quick Fixes</h2>';
     
-    if (isset($_POST['enable_gateway'])) {
+    if (isset($_POST['enable_gateway']) && isset($_POST['_wpnonce']) && wp_verify_nonce($_POST['_wpnonce'], 'nicky_debug_enable')) {
         $settings = get_option('woocommerce_nicky_settings', array());
         $settings['enabled'] = 'yes';
         if (empty($settings['title'])) {
@@ -171,6 +171,7 @@ function nicky_debug_page() {
     }
     
     echo '<form method="post">';
+    wp_nonce_field('nicky_debug_enable');
     echo '<p>';
     echo '<input type="submit" name="enable_gateway" class="button button-primary" value="Activate Gateway (Test Mode)" />';
     echo '</p>';

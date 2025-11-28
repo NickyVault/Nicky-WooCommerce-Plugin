@@ -165,8 +165,12 @@ class Nicky_Payment_Gateway_Admin {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'nicky_payment_transactions';
-        $query = sprintf("SELECT * FROM %s ORDER BY created_at DESC LIMIT 10", $table_name);
-        $transactions = $wpdb->get_results($query, ARRAY_A);
+        $cache_key_transactions = 'nicky_recent_transactions';
+        $transactions = wp_cache_get($cache_key_transactions);
+        if ($transactions === false) {
+            $transactions = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %s ORDER BY created_at DESC LIMIT 10", $table_name ), ARRAY_A );
+            wp_cache_set($cache_key_transactions, $transactions, '', 60); // Cache for 1 minute
+        }
 
         if (empty($transactions)) {
             echo '<p>' . esc_html(__('No transactions found.', 'nicky-me')) . '</p>';
@@ -265,18 +269,34 @@ class Nicky_Payment_Gateway_Admin {
 
         $table_name = $wpdb->prefix . 'nicky_payment_transactions';
 
-        // Get statistics
-        $total_query = sprintf("SELECT COUNT(*) FROM %s", $table_name);
-        $total_transactions = $wpdb->get_var($total_query);
+        // Get statistics with caching
+        $cache_key_total = 'nicky_total_transactions';
+        $total_transactions = wp_cache_get($cache_key_total);
+        if ($total_transactions === false) {
+            $total_transactions = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s", $table_name ) );
+            wp_cache_set($cache_key_total, $total_transactions, '', 300); // Cache for 5 minutes
+        }
         
-        $successful_query = sprintf("SELECT COUNT(*) FROM %s WHERE payment_status = 'completed'", $table_name);
-        $successful_transactions = $wpdb->get_var($successful_query);
+        $cache_key_successful = 'nicky_successful_transactions';
+        $successful_transactions = wp_cache_get($cache_key_successful);
+        if ($successful_transactions === false) {
+            $successful_transactions = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s WHERE payment_status = 'completed'", $table_name ) );
+            wp_cache_set($cache_key_successful, $successful_transactions, '', 300);
+        }
         
-        $amount_query = sprintf("SELECT SUM(amount) FROM %s WHERE payment_status = 'completed'", $table_name);
-        $total_amount = $wpdb->get_var($amount_query);
+        $cache_key_amount = 'nicky_total_amount';
+        $total_amount = wp_cache_get($cache_key_amount);
+        if ($total_amount === false) {
+            $total_amount = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(amount) FROM %s WHERE payment_status = 'completed'", $table_name ) );
+            wp_cache_set($cache_key_amount, $total_amount, '', 300);
+        }
         
-        $today_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE DATE(created_at) = %s", gmdate('Y-m-d'));
-        $today_transactions = $wpdb->get_var($today_query);
+        $cache_key_today = 'nicky_today_transactions';
+        $today_transactions = wp_cache_get($cache_key_today);
+        if ($today_transactions === false) {
+            $today_transactions = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %s WHERE DATE(created_at) = %s", $table_name, gmdate('Y-m-d') ) );
+            wp_cache_set($cache_key_today, $today_transactions, '', 300);
+        }
 
         echo '<div class="nicky-stats-grid">';
         

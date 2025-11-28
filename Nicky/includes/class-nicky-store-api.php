@@ -87,7 +87,7 @@ class Nicky_Store_API_Integration {
     private function is_store_api_request() {
         return defined('REST_REQUEST') && REST_REQUEST && 
                isset($_SERVER['REQUEST_URI']) && 
-               strpos(esc_url_raw($_SERVER['REQUEST_URI']), '/wc/store/') !== false;
+               strpos(esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])), '/wc/store/') !== false;
     }
 }
 
