@@ -33,8 +33,8 @@ function nicky_payment_gateway_safe_init() {
  * Add the gateway to WooCommerce (safe version)
  */
 function nicky_add_payment_gateway_safe($gateways) {
-    if (class_exists('WC_Gateway_Nicky')) {
-        $gateways[] = 'WC_Gateway_Nicky';
+    if (class_exists('Nicky_WC_Gateway_Nicky')) {
+        $gateways[] = 'Nicky_WC_Gateway_Nicky';
     }
     return $gateways;
 }

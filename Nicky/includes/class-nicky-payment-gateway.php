@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 /**
  * Nicky Payment Gateway class
  */
-class WC_Gateway_Nicky extends WC_Payment_Gateway {
+class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
     /**
      * Constructor
@@ -300,7 +300,7 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
         $api_key = $this->get_option('api_key', '');
         if (empty($api_key)) {
             // Try to get the API key from POST data if we're in the process of removing it
-            $api_key = sanitize_text_field(wp_unslash($_POST['woocommerce_nicky_api_key'] ?? ''));
+            $api_key = sanitize_text_field(wp_unslash($_POST['woocommerce_nicky_api_key'] ?? '')); // phpcs:ignore WordPress.Security.NonceVerification.Missing
         }
         
         if (empty($api_key)) {
@@ -1122,26 +1122,26 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
     public function webhook_handler() {
         // Log webhook call for debugging
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook Handler called. Method: ' . sanitize_key(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : ''));
-            error_log('Nicky Webhook GET params: ' . print_r(array_map('sanitize_text_field', $_GET), true));
-            error_log('Nicky Webhook POST params: ' . print_r(array_map('sanitize_text_field', $_POST), true));
+            error_log('Nicky Webhook Handler called. Method: ' . sanitize_key(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '')); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            error_log('Nicky Webhook GET params: ' . print_r(array_map('sanitize_text_field', $_GET), true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r
+            error_log('Nicky Webhook POST params: ' . print_r(array_map('sanitize_text_field', $_POST), true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r
         }
         
         $raw_body = file_get_contents('php://input');
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook raw body: ' . $raw_body);
+            error_log('Nicky Webhook raw body: ' . $raw_body); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
         
         $data = json_decode($raw_body, true);
 
         // If JSON decode fails, try to get data from GET/POST
         if (empty($data)) {
-            $data = array_map('sanitize_text_field', $_GET + $_POST);
+            $data = array_map('sanitize_text_field', $_GET + $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
 
         // Log parsed data
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook parsed data: ' . print_r($data, true));
+            error_log('Nicky Webhook parsed data: ' . print_r($data, true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r
         }
 
         // Validate webhook type (support both formats: webHookType and WebHookType)
@@ -1465,6 +1465,11 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
     public function ajax_check_payment_status() {
         check_ajax_referer('nicky_payment_nonce', 'nonce');
         
+        if (!isset($_POST['order_id'])) {
+            wp_send_json_error('Order ID missing');
+            return;
+        }
+        
         $order_id = intval($_POST['order_id']);
         $order = wc_get_order($order_id);
         
@@ -1622,7 +1627,9 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
 
         // Check if WP Cron is disabled
         if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
-            error_log('Nicky Gateway: WARNING - WP Cron is disabled (DISABLE_WP_CRON = true). Cron job will not run.');
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Nicky Gateway: WARNING - WP Cron is disabled (DISABLE_WP_CRON = true). Cron job will not run.');
+            }
         }
 
         $next_scheduled = wp_next_scheduled('nicky_check_payment_status_cron');
@@ -1630,7 +1637,9 @@ class WC_Gateway_Nicky extends WC_Payment_Gateway {
             // Schedule to run every 30 seconds
             $scheduled = wp_schedule_event(time(), 'every_30_seconds', 'nicky_check_payment_status_cron');
             if ($scheduled === false) {
-                error_log('Nicky Gateway: ERROR - Failed to schedule cron job');
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log('Nicky Gateway: ERROR - Failed to schedule cron job');
+                }
             }
         }
     }

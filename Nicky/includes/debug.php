@@ -36,10 +36,10 @@ function nicky_debug_gateway_status() {
     }
     
     // Check if our gateway class exists
-    if (class_exists('WC_Gateway_Nicky')) {
-        echo '<p>✅ WC_Gateway_Nicky class exists</p>';
+    if (class_exists('Nicky_WC_Gateway_Nicky')) {
+        echo '<p>✅ Nicky_WC_Gateway_Nicky class exists</p>';
     } else {
-        echo '<p>❌ WC_Gateway_Nicky class missing</p>';
+        echo '<p>❌ Nicky_WC_Gateway_Nicky class missing</p>';
     }
     
     // Check available payment gateways

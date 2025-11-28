@@ -71,8 +71,8 @@ class Nicky_Payment_Gateway_Admin {
                 return;
             }
             
-            if (!class_exists('WC_Gateway_Nicky')) {
-                echo '<div class="notice notice-error"><p>Gateway class WC_Gateway_Nicky not found! Please deactivate and reactivate the plugin.</p></div>';
+            if (!class_exists('Nicky_WC_Gateway_Nicky')) {
+                echo '<div class="notice notice-error"><p>Gateway class Nicky_WC_Gateway_Nicky not found! Please deactivate and reactivate the plugin.</p></div>';
                 echo '</div>';
                 return;
             }
@@ -205,13 +205,13 @@ class Nicky_Payment_Gateway_Admin {
      */
     private function display_gateway_configuration() {
         // Debug: Check if class exists
-        if (!class_exists('WC_Gateway_Nicky')) {
-            echo '<div class="notice notice-error"><p>Error: WC_Gateway_Nicky class not found!</p></div>';
+        if (!class_exists('Nicky_WC_Gateway_Nicky')) {
+            echo '<div class="notice notice-error"><p>Error: Nicky_WC_Gateway_Nicky class not found!</p></div>';
             return;
         }
         
         try {
-            $gateway = new WC_Gateway_Nicky();
+            $gateway = new Nicky_WC_Gateway_Nicky();
             $logo_url = $gateway->get_gateway_icon();
         } catch (Exception $e) {
             echo '<div class="notice notice-error"><p>Error creating gateway: ' . esc_html($e->getMessage()) . '</p></div>';

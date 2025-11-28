@@ -37,8 +37,8 @@ class Nicky_Store_API_Integration {
      */
     public function make_gateway_available_for_api($gateways) {
         if ($this->is_store_api_request()) {
-            if (class_exists('WC_Gateway_Nicky') && !isset($gateways['nicky'])) {
-                $nicky_gateway = new WC_Gateway_Nicky();
+            if (class_exists('Nicky_WC_Gateway_Nicky') && !isset($gateways['nicky'])) {
+                $nicky_gateway = new Nicky_WC_Gateway_Nicky();
                 if ($nicky_gateway->enabled === 'yes') {
                     $gateways['nicky'] = $nicky_gateway;
                 }
@@ -68,7 +68,7 @@ class Nicky_Store_API_Integration {
         if ($order->get_payment_method() === 'nicky') {
             error_log('Nicky.me: Store API - Processing payment for order ' . $order->get_id());
             
-            $gateway = new WC_Gateway_Nicky();
+            $gateway = new Nicky_WC_Gateway_Nicky();
             $result = $gateway->process_payment($order->get_id());
             
             if ($result['result'] === 'success') {

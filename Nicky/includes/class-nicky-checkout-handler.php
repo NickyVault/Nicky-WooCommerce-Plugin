@@ -171,8 +171,8 @@ class Nicky_Checkout_Handler {
 
         // Log the payment initiation
         $gateway = WC()->payment_gateways()->payment_gateways()['nicky'];
-        /* translators: %s: URL to Nicky.me */
         $order->add_order_note(sprintf(
+            /* translators: %s: URL to Nicky.me */
             __('Nicky.me payment initiated. Customer will be redirected to %s', 'nicky-me'),
             'https://pay.nicky.me'
         ));
@@ -216,8 +216,8 @@ class Nicky_Checkout_Handler {
         $mailer = WC()->mailer();
         $message = $mailer->wrap_message(
             __('Payment Confirmed', 'nicky-me'),
-            /* translators: %s: order number */
             sprintf(
+                /* translators: %s: order number */
                 __('Your cryptocurrency payment for order #%s has been confirmed and is being processed.', 'nicky-me'),
                 $order->get_order_number()
             )
@@ -268,8 +268,8 @@ class Nicky_Checkout_Handler {
         
         $message = $mailer->wrap_message(
             __('Payment Cancelled', 'nicky-me'),
-            /* translators: %1$s: order number, %2$s: retry URL */
             sprintf(
+                /* translators: %1$s: order number, %2$s: retry URL */
                 __('Your payment for order #%1$s was cancelled. You can retry your payment using this link: %2$s', 'nicky-me'),
                 $order->get_order_number(),
                 $retry_url
@@ -293,8 +293,8 @@ class Nicky_Checkout_Handler {
         
         $message = $mailer->wrap_message(
             __('Payment Failed', 'nicky-me'),
-            /* translators: %1$s: order number, %2$s: retry URL */
             sprintf(
+                /* translators: %1$s: order number, %2$s: retry URL */
                 __('Your payment for order #%1$s failed. Please try again using this link: %2$s', 'nicky-me'),
                 $order->get_order_number(),
                 $retry_url

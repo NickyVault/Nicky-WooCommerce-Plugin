@@ -86,7 +86,7 @@ class Nicky_Payment_Simple_Blocks {
         // Check for errors
         if (is_wp_error($response)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky API Error: ' . $response->get_error_message());
+                error_log('Nicky API Error: ' . $response->get_error_message()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             return self::get_fallback_assets();
         }
@@ -94,7 +94,7 @@ class Nicky_Payment_Simple_Blocks {
         $response_code = wp_remote_retrieve_response_code($response);
         if ($response_code !== 200) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky API Error: HTTP ' . $response_code);
+                error_log('Nicky API Error: HTTP ' . $response_code); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             return self::get_fallback_assets();
         }
@@ -104,7 +104,7 @@ class Nicky_Payment_Simple_Blocks {
         
         if (!is_array($data)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky API Error: Invalid JSON response');
+                error_log('Nicky API Error: Invalid JSON response'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             return self::get_fallback_assets();
         }

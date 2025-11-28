@@ -105,11 +105,11 @@ add_action('plugins_loaded', 'nicky_payment_gateway_init');
  * Add the gateway to WooCommerce
  */
 function nicky_add_payment_gateway($gateways) {
-    if (!class_exists('WC_Gateway_Nicky')) {
+    if (!class_exists('Nicky_WC_Gateway_Nicky')) {
         return $gateways;
     }
     
-    $gateways[] = 'WC_Gateway_Nicky';
+    $gateways[] = 'Nicky_WC_Gateway_Nicky';
     return $gateways;
 }
 
@@ -118,8 +118,8 @@ function nicky_add_payment_gateway($gateways) {
  */
 function nicky_ensure_gateway_available($available_gateways) {
     // If Nicky gateway is registered but not in available list, add it
-    if (class_exists('WC_Gateway_Nicky')) {
-        $gateway = new WC_Gateway_Nicky();
+    if (class_exists('Nicky_WC_Gateway_Nicky')) {
+        $gateway = new Nicky_WC_Gateway_Nicky();
         if ($gateway->enabled === 'yes' && $gateway->is_available()) {
             if (!isset($available_gateways['nicky'])) {
                 $available_gateways['nicky'] = $gateway;
@@ -150,7 +150,7 @@ function nicky_handle_store_api_checkout() {
             $order_id = $order->get_id();
             
             // Process with our gateway
-            $gateway = new WC_Gateway_Nicky();
+            $gateway = new Nicky_WC_Gateway_Nicky();
             $result = $gateway->process_payment($order_id);
             
             if ($result['result'] === 'success') {
