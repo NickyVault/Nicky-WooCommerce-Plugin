@@ -208,7 +208,7 @@ class Nicky_Payment_Dashboard_Widget {
         $order->save();
         
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Dashboard: Order #' . $order_id . ' manually marked as paid by user ' . get_current_user_id());
+            error_log('Nicky Dashboard: Order #' . $order_id . ' manually marked as paid by user ' . get_current_user_id()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
         
         wp_send_json_success(array(
