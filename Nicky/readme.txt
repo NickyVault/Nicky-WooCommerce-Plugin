@@ -3,7 +3,7 @@ Contributors: NickyVault
 Tags: woocommerce, payment gateway, cryptocurrency, bitcoin, ethereum
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,6 +13,27 @@ Secure cryptocurrency payment gateway for WooCommerce. Accept Bitcoin, Ethereum,
 == Description ==
 
 Nicky.me is a secure and reliable cryptocurrency payment gateway for your WooCommerce store. Accept payments in Bitcoin, Ethereum, USDT and other popular cryptocurrencies with ease.
+
+= External Service Usage =
+
+This plugin connects to the Nicky.me payment processing service (https://nicky.me) to process cryptocurrency payments. When a customer makes a purchase:
+
+* Order data (amount, currency, order ID) is sent to https://api-public.pay.nicky.me
+* Payment status updates are received via webhook from Nicky.me servers
+* Customer payment information is processed through Nicky.me's secure payment interface
+
+By using this plugin, you agree to Nicky.me's Terms of Service and Privacy Policy:
+* Terms of Service: https://nicky.me/terms
+* Privacy Policy: https://nicky.me/privacy
+
+= Data Processing & Privacy =
+
+The plugin stores transaction data locally including:
+* Order ID and payment status
+* Transaction ID from Nicky.me
+* Payment amounts and currency
+
+No sensitive customer payment information (wallet addresses, private keys) is stored in your WordPress database.
 
 **Features:**
 
@@ -53,7 +74,25 @@ The plugin supports Bitcoin, Ethereum, USDT and other cryptocurrencies available
 
 Yes, the plugin is fully compatible with the new WooCommerce Blocks checkout.
 
+= What data does the plugin send to external services? =
+
+The plugin sends order information (amount, currency, order ID) to Nicky.me API for payment processing. No sensitive customer data like passwords or full credit card numbers are transmitted or stored by the plugin. See the "External Service Usage" section for more details.
+
+= Is the plugin GDPR compliant? =
+
+The plugin stores minimal transaction data locally (order ID, transaction ID, payment status, amounts). Ensure your site's privacy policy mentions the use of Nicky.me for payment processing.
+
+= Can I use this plugin in test mode? =
+
+Yes, you can configure test mode settings in the gateway configuration. Contact Nicky.me support for test API credentials.
+
 == Changelog ==
+
+= 1.0.1 =
+* Updated WordPress and WooCommerce compatibility (tested up to WP 6.8 and WC 9.5)
+* Added external service disclosure in compliance with WordPress.org guidelines
+* Enhanced privacy and data processing documentation
+* Improved readme with detailed service usage information
 
 = 1.0.0 =
 * Initial release
