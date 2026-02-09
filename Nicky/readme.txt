@@ -2,8 +2,8 @@
 Contributors: NickyVault
 Tags: woocommerce, payment gateway, cryptocurrency, bitcoin, ethereum
 Requires at least: 5.0
-Tested up to: 6.8
-Stable tag: 1.0.2
+Tested up to: 6.9
+Stable tag: 1.0.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -87,6 +87,11 @@ The plugin stores minimal transaction data locally (order ID, transaction ID, pa
 Yes, you can configure test mode settings in the gateway configuration. Contact Nicky.me support for test API credentials.
 
 == Changelog ==
+
+= 1.0.2 =
+* Updated WordPress compatibility (tested up to WP 6.9)
+* Optimized dashboard widget performance with caching
+* Fixed slow database query warning
 
 = 1.0.1 =
 * Updated WordPress and WooCommerce compatibility (tested up to WP 6.8 and WC 9.5)
