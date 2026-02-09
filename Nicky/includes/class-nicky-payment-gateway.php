@@ -666,9 +666,8 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
         
         // Check if we're on WooCommerce settings page
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Checking current admin page, not processing form data
         if (strpos($hook_suffix, 'wc-settings') === false && 
-            (!isset($_GET['page']) || sanitize_key($_GET['page']) !== 'wc-settings')) {
+            (!isset($_GET['page']) || sanitize_key($_GET['page']) !== 'wc-settings')) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Checking current admin page, not processing form data
             return;
         }
 
@@ -1124,10 +1123,8 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         // Log webhook call for debugging
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log('Nicky Webhook Handler called. Method: ' . sanitize_key(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '')); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Webhook from external service, no nonce
-            error_log('Nicky Webhook GET params: ' . print_r(array_map('sanitize_text_field', $_GET), true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Webhook from external service, no nonce
-            error_log('Nicky Webhook POST params: ' . print_r(array_map('sanitize_text_field', $_POST), true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r
+            error_log('Nicky Webhook GET params: ' . print_r(array_map('sanitize_text_field', $_GET), true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r,WordPress.Security.NonceVerification.Recommended -- Webhook from external service, no nonce
+            error_log('Nicky Webhook POST params: ' . print_r(array_map('sanitize_text_field', $_POST), true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r,WordPress.Security.NonceVerification.Missing -- Webhook from external service, no nonce
         }
         
         $raw_body = file_get_contents('php://input');
@@ -1139,8 +1136,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
         // If JSON decode fails, try to get data from GET/POST
         if (empty($data)) {
-            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Webhook from external service (Nicky.me API), no nonce verification needed
-            $data = array_map('sanitize_text_field', $_GET + $_POST);
+            $data = array_map('sanitize_text_field', $_GET + $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- Webhook from external service (Nicky.me API), no nonce verification needed
         }
 
         // Log parsed data
