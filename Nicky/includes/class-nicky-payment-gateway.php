@@ -1156,7 +1156,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             exit;
         }
         
-        error_log('Nicky Webhook type: ' . $webhook_type);
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('Nicky Webhook type: ' . $webhook_type); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+        }
 
         if ($webhook_type !== 'PaymentRequest_StatusChanged') {
             if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -1298,7 +1300,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             exit;
         }
         
-        error_log('Nicky Webhook: Found shortId: ' . $short_id . ', Status: ' . $status);
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('Nicky Webhook: Found shortId: ' . $short_id . ', Status: ' . $status); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+        }
 
         // Find order by shortId
         $orders = wc_get_orders(array(
@@ -1356,7 +1360,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 break;
                 
             case 'PaymentValidationRequired':
-                error_log('Nicky Webhook: Handling PaymentValidationRequired status');
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log('Nicky Webhook: Handling PaymentValidationRequired status'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                }
                 $order->update_status('on-hold', sprintf(
                     'Payment validation required (shortId: %s)',
                     $short_id
@@ -1367,7 +1373,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 break;
                 
             default:
-                error_log('Nicky Webhook: Handling unknown status: ' . $status);
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log('Nicky Webhook: Handling unknown status: ' . $status); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                }
                 $order->add_order_note(sprintf(
                     'Nicky status update: %s → %s (shortId: %s)',
                     $previous_status,
@@ -1376,7 +1384,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 ));
         }
 
-        error_log('Nicky Webhook: Successfully processed webhook');
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('Nicky Webhook: Successfully processed webhook'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+        }
         status_header(200);
         echo 'ok';
         exit;
