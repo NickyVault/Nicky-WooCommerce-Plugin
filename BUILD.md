@@ -11,11 +11,32 @@ This plugin has separate **development** and **production** versions:
 
 ### Build Production ZIP
 
+The build script offers multiple ways to manage versions:
+
+#### Interactive Mode (Recommended)
 ```bash
 ./build-production.sh
 ```
 
-This creates a clean `Nicky.zip` file ready for WordPress.org submission.
+This will:
+1. Show the current version
+2. Offer to auto-increment (1.0.1 → 1.0.2)
+3. Let you enter a custom version
+4. Or keep the current version
+5. Update all files automatically
+6. Create production ZIP
+
+#### Auto-increment Version
+```bash
+./build-production.sh 1.0.2
+```
+Specify the new version directly as an argument.
+
+#### Build Without Version Update
+```bash
+./build-production.sh --no-version
+```
+Build the ZIP without changing any version numbers.
 
 ## What Gets Excluded from Production
 
@@ -101,13 +122,69 @@ OUTPUT_ZIP="nicky-payment-gateway.zip"  # Instead of "Nicky.zip"
 
 ## Version Management
 
-The build script automatically reads the version from:
-```php
-// In nicky-payment-gateway.php
-* Version: 1.0.1
+### How Versions Are Updated
+
+The build script automatically updates version numbers in:
+
+1. **nicky-payment-gateway.php**
+   - Plugin header: `* Version: X.X.X`
+   - Constant: `define('NICKY_PAYMENT_GATEWAY_VERSION', 'X.X.X');`
+
+2. **readme.txt**
+   - `Stable tag: X.X.X`
+
+### Version Update Options
+
+When you run `./build-production.sh`, you'll see:
+
+```
+Current version: 1.0.1
+
+Version Update Options:
+  1) Auto-increment patch version (recommended)
+  2) Enter custom version
+  3) Keep current version (1.0.1)
+
+Choose option [1-3]:
 ```
 
-Make sure to update this before building for release.
+**Option 1** - Auto-increment (recommended for bug fixes):
+- 1.0.1 → 1.0.2
+- 1.0.9 → 1.0.10
+- Follows semantic versioning patch level
+
+**Option 2** - Custom version (for major/minor releases):
+- Enter any version: 1.1.0, 2.0.0, etc.
+- Use for feature releases or breaking changes
+
+**Option 3** - No change:
+- Keeps current version
+- Useful for rebuilding without version bump
+
+### Command Line Version Control
+
+```bash
+# Auto-increment patch version interactively
+./build-production.sh
+
+# Specify exact version
+./build-production.sh 1.0.2
+./build-production.sh 2.0.0
+
+# Build without changing version
+./build-production.sh --no-version
+```
+
+### Don't Forget the Changelog!
+
+The script updates version numbers automatically, but you should manually update the changelog in `readme.txt`:
+
+```
+== Changelog ==
+
+= 1.0.2 =
+* Updated: WordPress 6.8 compatibility
+```
 
 ## Continuous Integration (CI/CD)
 
