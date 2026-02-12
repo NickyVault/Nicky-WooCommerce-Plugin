@@ -1194,84 +1194,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             error_log('Nicky Webhook status change: ' . $previous_status . ' → ' . $new_status); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
 
-        // If NewStatus is "Finished", we can directly complete the payment without additional API call
-        if ($new_status === 'Finished') {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook: Payment finished, fetching details from API'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-            }
-            
-            // Query API to get shortId for finding the order
-            $api_resp = $this->api_get('/api/public/PaymentRequestPublicApi/get-by-id', array('id' => $payment_request_id));
-            
-            if (is_wp_error($api_resp)) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook error: API error - ' . $api_resp->get_error_message()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                }
-                status_header(500);
-                echo 'api_error';
-                exit;
-            }
-
-            $short_id = $api_resp['bill']['shortId'] ?? '';
-            if (empty($short_id)) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook error: missing shortId in API response'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                }
-                status_header(500);
-                echo 'missing_short_id';
-                exit;
-            }
-            
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook: Found shortId: ' . $short_id); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-            }
-
-            // Find order by shortId
-            $orders = wc_get_orders(array(
-                'limit' => 1,
-                'meta_key' => '_nicky_short_id',
-                'meta_value' => $short_id,
-            ));
-
-            if (empty($orders)) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook error: Order not found for shortId: ' . $short_id); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                }
-                status_header(404);
-                echo 'order_not_found';
-                exit;
-            }
-
-            $order = $orders[0];
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook: Found order #' . $order->get_id()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-            }
-
-            // Complete the payment
-            if (!$order->is_paid()) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook: Completing payment for order #' . $order->get_id()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                }
-                $order->payment_complete();
-                $order->add_order_note(sprintf(
-                    'Payment completed via Nicky Webhook. PaymentRequest ID: %s, Status: %s → %s, ShortId: %s',
-                    $payment_request_id,
-                    $previous_status,
-                    $new_status,
-                    $short_id
-                ));
-            } else {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook: Order #' . $order->get_id() . ' already paid'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                }
-            }
-
-            status_header(200);
-            echo 'payment_completed';
-            exit;
-        }
-
-        // For other statuses, get full details and process accordingly
+        // Always fetch full payment details from API to handle all status changes
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log('Nicky Webhook: Processing status change, fetching details from API'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
@@ -1325,16 +1248,17 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             error_log('Nicky Webhook: Found order #' . $order->get_id()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
 
-        // Process other payment statuses
+        // Process payment status - handle all statuses including for already paid orders
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook: Processing status: ' . $status . ' for order #' . $order->get_id()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            error_log('Nicky Webhook: Processing status: ' . $status . ' for order #' . $order->get_id() . ' (current order status: ' . $order->get_status() . ', is_paid: ' . ($order->is_paid() ? 'yes' : 'no') . ')'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
+        
         switch ($status) {
             case 'Finished':
-                // This should not happen since we handle it above, but keep for safety
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook: Handling Finished status (fallback)'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                    error_log('Nicky Webhook: Handling Finished status'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
+                // Always complete payment, even if already marked as paid
                 if (!$order->is_paid()) {
                     $order->payment_complete();
                     $order->add_order_note(sprintf(
@@ -1344,6 +1268,14 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                         $new_status,
                         $open_amount
                     ));
+                } else {
+                    // Order already paid, just add note
+                    $order->add_order_note(sprintf(
+                        'Nicky Webhook received for already paid order. Status: %s → %s (shortId: %s)',
+                        $previous_status,
+                        $new_status,
+                        $short_id
+                    ));
                 }
                 break;
                 
@@ -1351,12 +1283,13 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
                     error_log('Nicky Webhook: Handling Canceled status'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
-                if (!$order->is_paid()) {
-                    $order->update_status('cancelled', sprintf(
-                        'Payment cancelled via Nicky (shortId: %s)',
-                        $short_id
-                    ));
-                }
+                // Cancel order even if already paid (allows reversing completed orders)
+                $order->update_status('cancelled', sprintf(
+                    'Payment cancelled via Nicky Webhook. Previous status: %s → %s (shortId: %s)',
+                    $previous_status,
+                    $new_status,
+                    $short_id
+                ));
                 break;
                 
             case 'PaymentValidationRequired':
@@ -1370,6 +1303,21 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 // Set validation flag for dashboard widget (HPOS compatible)
                 $order->update_meta_data('_nicky_requires_validation', 'yes');
                 $order->save();
+                break;
+                
+            case 'Pending':
+            case 'PendingPayment':
+            case 'AwaitingPayment':
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log('Nicky Webhook: Handling Pending status - resetting order'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                }
+                // Reset order back to pending, even if it was previously completed
+                $order->update_status('pending', sprintf(
+                    'Payment reset to pending via Nicky Webhook. Previous status: %s → %s (shortId: %s)',
+                    $previous_status,
+                    $new_status,
+                    $short_id
+                ));
                 break;
                 
             default:
