@@ -1305,11 +1305,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 $order->save();
                 break;
                 
-            case 'Pending':
-            case 'PendingPayment':
-            case 'AwaitingPayment':
+            case 'PaymentPending':
+            case 'None':
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook: Handling Pending status - resetting order'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                    error_log('Nicky Webhook: Handling PaymentPending/None status - resetting order'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
                 // Reset order back to pending, even if it was previously completed
                 $order->update_status('pending', sprintf(
