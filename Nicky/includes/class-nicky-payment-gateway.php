@@ -70,11 +70,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         add_action('woocommerce_thankyou_' . $this->id, array($this, 'thankyou_page'));
         add_action('woocommerce_email_before_order_table', array($this, 'email_instructions'), 10, 3);
         
-        // Add cron job for automatic payment status checking
-        add_action('nicky_check_payment_status_cron', array($this, 'cron_check_payment_status'));
-        add_action('init', array($this, 'schedule_payment_status_cron'));
-        add_filter('cron_schedules', array($this, 'add_cron_schedules'));
-        
         // Add hook for order cancellation
         add_action('woocommerce_order_status_cancelled', array($this, 'handle_order_cancellation'));
         add_action('woocommerce_order_status_pending_to_cancelled', array($this, 'handle_order_cancellation'));
@@ -1466,7 +1461,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             'order_status' => $order_status,
             'is_paid' => $is_paid,
             'open_amount' => $open_amount,
-            'note' => 'Backend cron handles automatic status updates'
+            'note' => 'Webhooks handle automatic status updates'
         ));
     }
     
@@ -1516,12 +1511,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             }
             
             echo '<p style="margin-top: 20px; font-size: 13px; color: #666;">';
-            echo '🔄 ' . esc_html(__('Payment status is automatically checked every 30 seconds by our backend system. Please refresh this page to see updates.', 'nicky-me'));
+            echo '🔄 ' . esc_html(__('Payment status is automatically updated via webhooks. Please refresh this page to see updates.', 'nicky-me'));
             echo '</p>';
-            echo '</div>';
-            
-            // Frontend polling disabled - all handled by backend cron job
-        } elseif ($order->has_status('completed') || $order->has_status('processing')) {
+            echo '</div>'
+        } else if ($order->has_status('completed') || $order->has_status('processing')) {
             echo '<div class="nicky-payment-complete" style="background: #e8f5e9; padding: 20px; margin: 20px 0; border-left: 4px solid #4caf50;">';
             echo '<h3 style="margin-top: 0; color: #2e7d32;">✅ ' . esc_html(__('Payment Complete', 'nicky-me')) . '</h3>';
             echo '<p>' . esc_html(__('Thank you! Your payment has been received and your order is being processed.', 'nicky-me')) . '</p>';
@@ -1561,121 +1554,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
     }
 
-    /**
-     * Add custom cron schedule intervals
-     */
-    public function add_cron_schedules($schedules) {
-        $schedules['every_30_seconds'] = array(
-            'interval' => 30,
-            'display' => __('Every 30 Seconds', 'nicky-me')
-        );
-        return $schedules;
-    }
 
-    /**
-     * Schedule WordPress Cron job for automatic payment status checking
-     * Runs every 30 seconds to check pending Nicky payments
-     */
-    public function schedule_payment_status_cron() {
-        // Only schedule if gateway is enabled
-        if ($this->enabled !== 'yes') {
-            return;
-        }
-
-        // Check if WP Cron is disabled
-        if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Gateway: WARNING - WP Cron is disabled (DISABLE_WP_CRON = true). Cron job will not run.'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-            }
-        }
-
-        $next_scheduled = wp_next_scheduled('nicky_check_payment_status_cron');
-        if (!$next_scheduled) {
-            // Schedule to run every 30 seconds
-            $scheduled = wp_schedule_event(time(), 'every_30_seconds', 'nicky_check_payment_status_cron');
-            if ($scheduled === false) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Gateway: ERROR - Failed to schedule cron job'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                }
-            }
-        }
-    }
-
-    /**
-     * Cron job handler to check payment status for pending orders
-     * Checks all pending Nicky orders and updates their status
-     * Runs every 30 seconds - this is the primary method for status updates
-     */
-    public function cron_check_payment_status() {
-
-        // Find all orders with pending Nicky payments
-        // Look for orders that are 'pending' and have Nicky short_id
-        $query_args = array(
-            'limit' => 50, // Limit to avoid performance issues
-            'status' => array('pending', 'on-hold'),
-            'payment_method' => $this->id,
-            'meta_query' => array(
-                'relation' => 'AND',
-                array(
-                    'key' => '_nicky_short_id',
-                    'compare' => 'EXISTS'
-                ),
-                array(
-                    'relation' => 'OR',
-                    array(
-                        'key' => '_nicky_last_cron_check',
-                        'compare' => 'NOT EXISTS'
-                    ),
-                    array(
-                        'key' => '_nicky_last_cron_check',
-                        'value' => time() - 60, // Check orders not checked in last 1 minute (more frequent)
-                        'compare' => '<',
-                        'type' => 'NUMERIC'
-                    )
-                )
-            ),
-            'orderby' => 'date',
-            'order' => 'DESC'
-        );
-
-        $orders = wc_get_orders($query_args);
-        
-        if (empty($orders)) {
-            return;
-        }
-
-        foreach ($orders as $order) {
-            $short_id = $order->get_meta('_nicky_short_id', true);
-            
-            if (empty($short_id)) {
-                continue;
-            }
-
-            // Update last check timestamp to avoid duplicate checks (HPOS compatible)
-            $order->update_meta_data('_nicky_last_cron_check', time());
-            $order->save();
-
-            // Check payment status via API
-            $result = $this->poll_order_by_short_id($short_id);
-
-            if (is_wp_error($result)) {
-                continue;
-            }
-
-            $status = $result['status'] ?? '';
-            $is_paid = $result['is_paid'] ?? false;
-
-            // Update order if payment is finished
-            if ($status === 'Finished' && $is_paid) {
-                $order->payment_complete();
-                $order->update_status('processing', __('Payment completed via Nicky (backend cron)', 'nicky-me'));
-                $order->add_order_note(sprintf(
-                    'Payment completed via backend status check (ShortId: %s)',
-                    $short_id
-                ));
-            }
-        }
-    }
 
 
 
