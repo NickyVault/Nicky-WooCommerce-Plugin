@@ -557,8 +557,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('nicky_admin_nonce'),
         ));
-        
-        wp_localize_script('nicky-payment-gateway-admin-script', 'ajaxurl', admin_url('admin-ajax.php'));
     }
 
 

@@ -289,8 +289,11 @@ class Nicky_Payment_Dashboard_Widget {
         
         // Add inline JavaScript for AJAX functionality
         $nonce = wp_create_nonce('nicky_dashboard_nonce');
+        $ajax_url = admin_url('admin-ajax.php');
         $js = "
         jQuery(document).ready(function($) {
+            var nickyAjaxUrl = '" . esc_js($ajax_url) . "';
+            
             $('.nicky-mark-paid').on('click', function(e) {
                 e.preventDefault();
                 
@@ -305,7 +308,7 @@ class Nicky_Payment_Dashboard_Widget {
                 button.prop('disabled', true).text('Processing...');
                 
                 $.ajax({
-                    url: ajaxurl,
+                    url: nickyAjaxUrl,
                     type: 'POST',
                     data: {
                         action: 'nicky_mark_order_paid',
