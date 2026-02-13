@@ -20,19 +20,16 @@ function nicky_payment_gateway_status_check() {
         'warnings' => array()
     );
 
-    // Check if plugin is active
-    if (is_plugin_active('nicky-payment-gateway/nicky-payment-gateway.php')) {
+    if (is_plugin_active('nicky-payment-gateway/nicky-me.php')) {
         $status['plugin_active'] = true;
     }
 
-    // Check if WooCommerce is active
     if (class_exists('WooCommerce')) {
         $status['woocommerce_active'] = true;
     } else {
         $status['errors'][] = 'WooCommerce is not activated.';
     }
 
-    // Check if database table exists
     global $wpdb;
     $table_name = $wpdb->prefix . 'nicky_payment_transactions';
     $cache_key = 'nicky_table_exists';
