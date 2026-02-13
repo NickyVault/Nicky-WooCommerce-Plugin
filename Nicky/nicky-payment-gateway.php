@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Nicky.me
- * Plugin URI: https://nicky.me/payment-gateway
+ * Plugin URI: https://nicky.me/
  * Description: Secure and reliable payment processing for WooCommerce powered by Nicky.me.
  * Version: 1.0.0
  * Author: Nicky.me
