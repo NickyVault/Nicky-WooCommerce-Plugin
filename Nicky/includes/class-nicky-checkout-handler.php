@@ -127,6 +127,7 @@ class Nicky_Checkout_Handler {
      * Validate checkout for Nicky payments
      */
     public function validate_checkout() {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification is handled by WooCommerce before woocommerce_checkout_process hook is called
         $payment_method = isset($_POST['payment_method']) ? sanitize_text_field(wp_unslash($_POST['payment_method'])) : '';
         
         if ($payment_method !== 'nicky') {

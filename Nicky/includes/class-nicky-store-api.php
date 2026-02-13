@@ -59,29 +59,6 @@ class Nicky_Store_API_Integration {
     }
     
     /**
-     * Process payment for order via Store API
-     * DEPRECATED: This method is no longer used. Payment processing is handled by 
-     * woocommerce_rest_checkout_process_payment_with_context hook in main plugin file.
-     */
-    /*
-    public function process_payment_for_order($order) {
-        if ($order->get_payment_method() === 'nicky') {
-            error_log('Nicky.me: Store API - Processing payment for order ' . $order->get_id());
-            
-            $gateway = new Nicky_WC_Gateway_Nicky();
-            $result = $gateway->process_payment($order->get_id());
-            
-            if ($result['result'] === 'success') {
-                error_log('Nicky.me: Store API - Payment processed successfully');
-            } else {
-                error_log('Nicky.me: Store API - Payment processing failed');
-            }
-        }
-        return $order;
-    }
-    */
-    
-    /**
      * Check if this is a Store API request
      */
     private function is_store_api_request() {

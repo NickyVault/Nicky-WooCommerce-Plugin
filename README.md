@@ -4,6 +4,24 @@ This README is intended for shop owners who want to install, configure, and oper
 
 In short: the plugin adds a Nicky.me crypto gateway to WooCommerce. It supports test and live modes, webhook handling, and transaction overview in the admin area.
 
+## For Developers
+
+📦 **Building for Production:** See [BUILD.md](BUILD.md) for development workflow  
+🚀 **Release Process:** See [RELEASE.md](RELEASE.md) for version management and release workflow
+
+### Quick Build Command
+
+```bash
+# Interactive build with version management
+./build-production.sh
+
+# Build specific version
+./build-production.sh 1.0.2
+
+# Build without version update
+./build-production.sh --no-version
+```
+
 ## Quick overview
 
 - Main plugin file: `nicky-payment-gateway.php`
