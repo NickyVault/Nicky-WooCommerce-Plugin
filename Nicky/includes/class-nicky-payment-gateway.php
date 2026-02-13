@@ -1,27 +1,13 @@
 <?php
-/**
- * Nicky Payment Gateway Class
- *
- * @package NickyPaymentGateway
- */
-
-// Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
 }
 
-/**
- * Nicky Payment Gateway class
- */
 class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
-    /**
-     * Constructor
-     */
     public function __construct() {
         $this->id                 = 'nicky';
         $this->icon               = $this->get_gateway_icon();
-        // Enable custom payment fields
         $this->has_fields         = true;
         $this->method_title       = 'Nicky.me';
         $this->method_description = 'Accept payments using Nicky.me - secure, fast and reliable payment processing';
@@ -33,97 +19,72 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             'subscription_reactivation'
         );
 
-        // Load the settings
         $this->init_form_fields();
         $this->init_settings();
 
-        // Define user set variables
         $this->title                = $this->get_option('title', 'Nicky.me Payment');
         $this->description          = $this->get_option('description', 'Pay securely with crypto via Nicky.me.');
         $this->enabled              = $this->get_option('enabled', 'no');
         
-        // Nicky API settings
         $this->api_base_url         = $this->get_option('api_base_url', 'https://api-public.pay.nicky.me');
         $this->api_key              = $this->get_option('api_key', '');
         $this->blockchain_asset_id  = $this->get_option('blockchain_asset_id', '');
         $this->settlement_currency  = $this->get_option('settlement_currency', '');
         
-        // Fallback: use settlement_currency if blockchain_asset_id is empty
         if (empty($this->blockchain_asset_id) && !empty($this->settlement_currency)) {
             $this->blockchain_asset_id = $this->settlement_currency;
         }
 
-        // Hooks
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_api_' . strtolower(get_class($this)), array($this, 'webhook_handler'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
         
-        // Add AJAX handlers
         add_action('wp_ajax_nickym_check_nicky_payment_status', array($this, 'ajax_check_payment_status'));
         add_action('wp_ajax_nopriv_nickym_check_nicky_payment_status', array($this, 'ajax_check_payment_status'));
         
-        // Add support for WooCommerce Blocks
         add_action('woocommerce_blocks_loaded', array($this, 'register_block_support'));
         
-        // Add order status handling
         add_action('woocommerce_thankyou_' . $this->id, array($this, 'thankyou_page'));
         add_action('woocommerce_email_before_order_table', array($this, 'email_instructions'), 10, 3);
         
-        // Add cron job for automatic payment status checking
         add_action('nicky_check_payment_status_cron', array($this, 'cron_check_payment_status'));
         add_action('init', array($this, 'schedule_payment_status_cron'));
         add_filter('cron_schedules', array($this, 'add_cron_schedules'));
         
-        // Add hook for order cancellation
         add_action('woocommerce_order_status_cancelled', array($this, 'handle_order_cancellation'));
         add_action('woocommerce_order_status_pending_to_cancelled', array($this, 'handle_order_cancellation'));
         add_action('woocommerce_order_status_on-hold_to_cancelled', array($this, 'handle_order_cancellation'));
     }
     
-    /**
-     * Register support for WooCommerce Blocks
-     */
     public function register_block_support() {
         if (class_exists('\Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
             add_filter('woocommerce_blocks_payment_method_type_registration', array($this, 'add_block_support'));
         }
     }
     
-    /**
-     * Add WooCommerce Blocks support
-     */
     public function add_block_support($payment_method_registry) {
-        // This is handled by the separate blocks class
         return $payment_method_registry;
     }
 
-    /**
-     * Check if gateway is available
-     */
     public function is_available() {
-        // Always check parent availability first
         if (!parent::is_available()) {
             return false;
         }
 
-        // Check if gateway is enabled
         if ('yes' !== $this->enabled) {
             return false;
         }
 
-        // Skip cart validation during admin or API calls
         if (!is_admin() && !defined('DOING_AJAX') && WC()->cart && WC()->cart->is_empty()) {
             return false;
         }
 
-        // Require API key and blockchain asset id
         if (empty($this->api_key)) {
             return false;
         }
         
         if (empty($this->blockchain_asset_id)) {
-            // Try to use settlement_currency as fallback
             if (!empty($this->settlement_currency)) {
                 $this->blockchain_asset_id = $this->settlement_currency;
             } else {
@@ -134,17 +95,12 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         return true;
     }
 
-    /**
-     * Get gateway icon
-     */
     public function get_gateway_icon() {
-        // Check for custom logo in settings first
         $custom_logo = $this->get_option('custom_logo');
         if (!empty($custom_logo)) {
             return esc_url($custom_logo);
         }
         
-        // Check if PNG logo exists
         $logo_png_path = NICKY_PAYMENT_GATEWAY_PLUGIN_PATH . 'assets/images/logo.png';
         $logo_png_url = NICKY_PAYMENT_GATEWAY_PLUGIN_URL . 'assets/images/logo.png';
         
@@ -152,7 +108,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return $logo_png_url;
         }
         
-        // Fallback to SVG logo
         $logo_svg_path = NICKY_PAYMENT_GATEWAY_PLUGIN_PATH . 'assets/images/logo.svg';
         $logo_svg_url = NICKY_PAYMENT_GATEWAY_PLUGIN_URL . 'assets/images/logo.svg';
         
@@ -160,38 +115,26 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return $logo_svg_url;
         }
         
-        // Return empty if no logo found
         return '';
     }
 
-    /**
-     * Process admin options and handle webhook creation
-     */
     public function process_admin_options() {
-        // Get old and new API key values
         $old_api_key = $this->get_option('api_key', '');
         
-        // Process the form fields first
         $result = parent::process_admin_options();
         
-        // Get the new API key value after saving
         $new_api_key = $this->get_option('api_key', '');
         
-        // Check if API key was just set (from empty to non-empty)
         if (empty($old_api_key) && !empty($new_api_key)) {
             $this->create_payment_status_webhook();
             
-            // Clear blockchain asset id if API key changed
             $this->update_option('blockchain_asset_id', '');
         }
-        // Check if API key was removed (from non-empty to empty)
         elseif (!empty($old_api_key) && empty($new_api_key)) {
             $this->delete_payment_status_webhook();
             
-            // Clear blockchain asset id when API key is removed
             $this->update_option('blockchain_asset_id', '');
         }
-        // If API key changed (but both are non-empty), clear blockchain asset
         elseif (!empty($old_api_key) && !empty($new_api_key) && $old_api_key !== $new_api_key) {
             $this->update_option('blockchain_asset_id', '');
         }
@@ -199,42 +142,31 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         return $result;
     }
 
-    /**
-     * Create PaymentRequest_StatusChanged webhook
-     */
     private function create_payment_status_webhook() {
-        // Ensure we have an API key
         $api_key = $this->get_option('api_key', '');
         if (empty($api_key)) {
             return false;
         }
         
-        // Check if we already have a webhook configured
         $existing_webhook_id = get_option('nicky_webhook_id', '');
         if (!empty($existing_webhook_id)) {
-            // Verify if the webhook still exists by listing webhooks
             if ($this->verify_webhook_exists($existing_webhook_id)) {
                 return true;
             } else {
-                // Webhook doesn't exist anymore, remove the stored ID
                 delete_option('nicky_webhook_id');
             }
         }
         
-        // Generate the webhook URL for this WordPress installation
         $webhook_url = $this->get_webhook_url();
         
-        // Prepare webhook creation request according to Swagger spec
         $body = array(
             'webHookType' => 'PaymentRequest_StatusChanged',
             'url' => $webhook_url
         );
         
-        // Call the API to create webhook with explicit API key
         $response = $this->api_post_with_key('/api/public/WebHookApi/create', $body, $api_key);
         
         if (is_wp_error($response)) {
-            // Show admin notice about webhook creation failure
             add_action('admin_notices', function() use ($response) {
                 echo '<div class="notice notice-warning is-dismissible">';
                 echo '<p><strong>Nicky.me:</strong> Webhook creation failed: ' . esc_html($response->get_error_message()) . '</p>';
@@ -243,12 +175,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return false;
         }
         
-        // Store webhook ID in options for future reference
         if (!empty($response['id'])) {
             $webhook_id = $response['id'];
             update_option('nicky_webhook_id', $webhook_id);
             
-            // Show success notice
             add_action('admin_notices', function() use ($webhook_id) {
                 echo '<div class="notice notice-success is-dismissible">';
                 echo '<p><strong>Nicky.me:</strong> Payment status webhook created successfully (ID: ' . esc_html($webhook_id) . ')</p>';
@@ -261,9 +191,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         return false;
     }
     
-    /**
-     * Verify if a webhook still exists by checking the webhook list
-     */
     private function verify_webhook_exists($webhook_id) {
         $api_key = $this->get_option('api_key', '');
         if (empty($api_key)) {
@@ -276,7 +203,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return false;
         }
         
-        // Check if our webhook ID exists in the list
         foreach ($response as $webhook) {
             if (isset($webhook['id']) && $webhook['id'] === $webhook_id) {
                 return true;
@@ -286,9 +212,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         return false;
     }
     
-    /**
-     * Delete the existing PaymentRequest_StatusChanged webhook
-     */
     private function delete_payment_status_webhook() {
         $webhook_id = get_option('nicky_webhook_id', '');
         
@@ -296,10 +219,8 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return false;
         }
         
-        // Use old API key if available (for deletion during key removal)
         $api_key = $this->get_option('api_key', '');
         if (empty($api_key)) {
-            // Try to get the API key from POST data if we're in the process of removing it
             $api_key = sanitize_text_field(wp_unslash($_POST['woocommerce_nicky_api_key'] ?? '')); // phpcs:ignore WordPress.Security.NonceVerification.Missing
         }
         
@@ -307,17 +228,14 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return false;
         }
         
-        // Call the API to delete webhook (using POST method with query parameter as per Swagger spec)
         $response = $this->api_post_with_key('/api/public/WebHookApi/delete?id=' . urlencode($webhook_id), array(), $api_key);
         
         if (is_wp_error($response)) {
             return false;
         }
         
-        // Remove the stored webhook ID
         delete_option('nicky_webhook_id');
         
-        // Show admin notice
         add_action('admin_notices', function() {
             echo '<div class="notice notice-info is-dismissible">';
             echo '<p><strong>Nicky.me:</strong> Payment status webhook was deleted.</p>';
@@ -327,18 +245,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         return true;
     }
     
-    /**
-     * Get the webhook URL for this WordPress installation
-     */
     private function get_webhook_url() {
-        // Use the WooCommerce API endpoint that's already set up for webhook handling
-        // The webhook_handler method is already configured to handle: ?wc-api=wc_gateway_nicky
         return add_query_arg('wc-api', 'wc_gateway_nicky', home_url('/'));
     }
 
-    /**
-     * Handle order cancellation - cancel payment request in Nicky.me
-     */
     public function handle_order_cancellation($order_id) {
         $order = wc_get_order($order_id);
         
@@ -346,12 +256,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return;
         }
         
-        // Only process Nicky payment method orders
         if ($order->get_payment_method() !== 'nicky') {
             return;
         }
         
-        // Get the Nicky shortId for this order (HPOS compatible)
         $short_id = $order->get_meta('_nicky_short_id', true);
         
         if (empty($short_id)) {
@@ -359,33 +267,29 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return;
         }
         
-        // Call Nicky.me cancel API
         $result = $this->cancel_payment_request($short_id);
         
         if (is_wp_error($result)) {
-            $error_message = $result->get_error_message();
+            $error_message = sanitize_text_field($result->get_error_message());
             $order->add_order_note(sprintf(
                 'Failed to cancel Nicky payment (shortId: %s): %s',
-                $short_id,
+                sanitize_text_field($short_id),
                 $error_message
             ));
         } elseif ($result === true) {
             $order->add_order_note(sprintf(
                 'Nicky payment cancelled successfully (shortId: %s)',
-                $short_id
+                sanitize_text_field($short_id)
             ));
         } else {
             $order->add_order_note(sprintf(
                 'Nicky payment cancellation response (shortId: %s): %s',
-                $short_id,
+                sanitize_text_field($short_id),
                 is_array($result) ? wp_json_encode($result) : $result
             ));
         }
     }
     
-    /**
-     * Cancel a payment request in Nicky.me via API
-     */
     private function cancel_payment_request($short_id) {
         if (empty($this->api_key)) {
             return new WP_Error('no_api_key', 'No API key configured');
@@ -395,25 +299,19 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return new WP_Error('no_short_id', 'No shortId provided');
         }
         
-        // Call the cancel endpoint (POST with shortId as query parameter)
         $response = $this->api_post('/api/public/PaymentRequestPublicApi/cancel?shortId=' . urlencode($short_id), array());
         
         if (is_wp_error($response)) {
             return $response;
         }
         
-        // The API returns a boolean according to Swagger spec
         if ($response === true || $response === 'true' || (is_array($response) && !empty($response))) {
             return true;
         }
         
-        // If we get here, the cancellation might have failed
         return new WP_Error('cancel_failed', 'Payment cancellation returned unexpected result: ' . wp_json_encode($response));
     }
 
-    /**
-     * Initialize Gateway Settings Form Fields
-     */
     public function init_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
@@ -466,19 +364,13 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         );
     }
 
-    /**
-     * Get blockchain asset options for admin select field
-     */
     private function get_blockchain_asset_options() {
-        // Default options
         $options = array(
             '' => 'Select blockchain asset...'
         );
 
-        // Get current settings for API URL
         $current_api_url = $this->get_option('api_base_url', 'https://api-public.pay.nicky.me');
         
-        // Try to load assets from API
         $assets = $this->fetch_blockchain_assets_for_admin($current_api_url);
         
         if (!empty($assets)) {
@@ -490,7 +382,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 $options[$asset['id']] = $label;
             }
         } else {
-            // Fallback options if API fails - use correct format from Swagger (assetChain.assetTicker)
             $options['BTC.BTC'] = 'Bitcoin (BTC) - BTC';
             $options['ETH.ETH'] = 'Ether (ETH) - ETH';
             $options['USD.USD'] = 'US Dollar (USD) - USD';
@@ -500,14 +391,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         return $options;
     }
 
-    /**
-     * Get blockchain asset field configuration based on API key availability
-     */
     private function get_blockchain_asset_field_config() {
         $api_key = $this->get_option('api_key', '');
         
         if (empty($api_key)) {
-            // No API key - field is disabled and empty
             return array(
                 'title'       => 'Settlement Currency / blockchainAssetId',
                 'type'        => 'select',
@@ -523,7 +410,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 'class'       => 'nicky-disabled-field'
             );
         } else {
-            // API key is set - field is enabled and loads options
             return array(
                 'title'       => 'Settlement Currency / blockchainAssetId',
                 'type'        => 'select',
@@ -536,17 +422,11 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
     }
 
-    /**
-     * Fetch blockchain assets from API for admin use
-     */
     private function fetch_blockchain_assets_for_admin($api_base_url) {
-        // Build API URL - correct endpoint
         $api_url = rtrim($api_base_url, '/') . '/AcceptedAsset/get-for-user';
         
-        // Get API key from settings
         $api_key = $this->get_option('api_key', '');
         
-        // Make API request with proper headers
         $response = wp_remote_get($api_url, [
             'timeout' => 10,
             'headers' => [
@@ -555,7 +435,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             ]
         ]);
         
-        // Check for errors
         if (is_wp_error($response)) {
             return array();
         }
@@ -572,7 +451,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return array();
         }
         
-        // Process accepted assets (include both fiat and crypto for settlement)
         $assets = array();
         foreach ($data as $asset) {
             $assets[] = array(
@@ -585,13 +463,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             );
         }
         
-        // No caching - return fresh data
         return $assets;
     }
 
-    /**
-     * Enqueue scripts
-     */
     public function enqueue_scripts() {
         if (!is_admin() && is_checkout()) {
             wp_enqueue_style(
@@ -601,7 +475,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 NICKY_PAYMENT_GATEWAY_VERSION
             );
 
-            // Add inline CSS for credit card form
             $css = '
                 .wc-credit-card-form .form-row {
                     margin-bottom: 15px;
@@ -642,7 +515,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             true
         );
         
-        // Enqueue payment fields script
         wp_enqueue_script(
             'nicky-payment-fields-script',
             NICKY_PAYMENT_GATEWAY_PLUGIN_URL . 'assets/js/payment-fields.js',
@@ -656,16 +528,11 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
     }
 
-    /**
-     * Enqueue admin scripts and styles
-     */
     public function admin_enqueue_scripts($hook_suffix) {
-        // Load on any admin page that might contain WooCommerce settings
         if (!is_admin()) {
             return;
         }
         
-        // Check if we're on WooCommerce settings page
         if (strpos($hook_suffix, 'wc-settings') === false && 
             (!isset($_GET['page']) || sanitize_key($_GET['page']) !== 'wc-settings')) {
             return;
@@ -691,46 +558,31 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             'nonce'    => wp_create_nonce('nicky_admin_nonce'),
         ));
         
-        // Also make sure global ajaxurl is available
         wp_localize_script('nicky-payment-gateway-admin-script', 'ajaxurl', admin_url('admin-ajax.php'));
     }
 
 
 
-    /**
-     * Payment form on checkout page
-     */
     public function payment_fields() {
-        // Show description if set
         if ($this->description) {
             echo esc_html(wpautop(wp_kses_post($this->description)));
         }
 
-        // Add helpful information - no input fields needed, data comes from billing
         echo '<div class="nicky-payment-info" style="margin-top: 15px; padding: 10px; background: #f0f8ff; border-left: 4px solid #0073aa; border-radius: 4px;">';
         echo '<p class="nicky-info-text" style="margin: 0; font-size: 14px;">';
         echo '🔒 ' . esc_html(__('You will be redirected to Nicky.me to complete your payment securely.', 'nicky-me'));
         echo '</p>';
         echo '</div>';
         
-        // Add supported payment methods info
         echo '<div class="nicky-supported-methods" style="margin-top: 10px; text-align: center;">';
         echo '<small style="color: #666;">💰 ' . esc_html(__('Supported: Bitcoin, Ethereum, USDT and more cryptocurrencies', 'nicky-me')) . '</small>';
         echo '</div>';
     }
 
-    /**
-     * Validate payment fields
-     * No custom fields needed - all data comes from WooCommerce billing information
-     */
     public function validate_fields() {
-        // No custom fields to validate - billing information is validated by WooCommerce
         return true;
     }
 
-    /**
-     * Process the payment
-     */
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
         
@@ -749,44 +601,33 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return array('result' => 'fail');
         }
         
-        // Get data from WooCommerce billing information (no custom fields needed)
         $payer_email = $order->get_billing_email();
         $payer_name = trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name());
         
-        // Use blockchain_asset_id from settings
         $selected_asset_id = $this->blockchain_asset_id;
         
-        // Validate asset ID format - must be in format "CHAIN.TICKER" (e.g., "EUR.EUR", "BTC.BTC")
         if (!empty($selected_asset_id) && strpos($selected_asset_id, '.') === false) {
-            // Try to fix common cases
             $selected_asset_id = $selected_asset_id . '.' . $selected_asset_id;
         }
         
-        // Get order amount in shop currency
         $amount_shop_currency = floatval($order->get_total());
         $shop_currency = get_woocommerce_currency();
         
-        // Get conversion quote from shop currency to target cryptocurrency
-        // The API returns the converted amount directly in the 'price' field
         $conversion_quote = $this->get_conversion_quote($amount_shop_currency, $selected_asset_id);
         
         if (is_wp_error($conversion_quote)) {
             $error_message = sprintf(
                 'Currency conversion failed: %s. Please try again or contact support.',
-                $conversion_quote->get_error_message()
+                sanitize_text_field($conversion_quote->get_error_message())
             );
-            $order->add_order_note('Nicky conversion error: ' . $conversion_quote->get_error_message());
+            $order->add_order_note('Nicky conversion error: ' . sanitize_text_field($conversion_quote->get_error_message()));
             wc_add_notice($error_message, 'error');
             return array('result' => 'fail');
         }
         
-        // Extract the converted amount from the quote response
-        // The 'price' field contains the final converted amount, not the exchange rate!
         $amount_crypto = isset($conversion_quote['price']) ? floatval($conversion_quote['price']) : 0.0;
-        $quote_id = isset($conversion_quote['id']) ? $conversion_quote['id'] : null;
+        $quote_id = isset($conversion_quote['id']) ? sanitize_text_field($conversion_quote['id']) : null;
         
-        // Prepare PaymentRequest according to Swagger API spec
-        // amountExpectedNative must be in the target cryptocurrency, not shop currency!
         $body = array(
             'blockchainAssetId' => $selected_asset_id,
             'amountExpectedNative' => $amount_crypto,
@@ -810,31 +651,28 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         $resp = $this->api_post('/api/public/PaymentRequestPublicApi/create', $body);
 
         if (is_wp_error($resp)) {
-            $order->add_order_note('Nicky API error: ' . $resp->get_error_message());
+            $order->add_order_note('Nicky API error: ' . sanitize_text_field($resp->get_error_message()));
             wc_add_notice('Payment error: could not create payment request.', 'error');
             return array('result' => 'fail');
         }
 
-        // Extract data from PaymentRequest response (according to Swagger spec)
-        // Response structure: PaymentRequest with nested bill.shortId
         $payment_request_id = '';
         $short_id = '';
         
         if (!empty($resp['id'])) {
-            $payment_request_id = $resp['id'];
+            $payment_request_id = sanitize_text_field($resp['id']);
         }
         
         if (!empty($resp['bill']['shortId'])) {
-            $short_id = $resp['bill']['shortId'];
+            $short_id = sanitize_text_field($resp['bill']['shortId']);
         }
 
         if (empty($short_id)) {
-            $order->add_order_note('Nicky PaymentRequest response missing bill.shortId: ' . wp_json_encode($resp));
+            $order->add_order_note('Nicky PaymentRequest response missing bill.shortId: ' . sanitize_text_field(wp_json_encode($resp)));
             wc_add_notice('Payment error: invalid response from payment provider.', 'error');
             return array('result' => 'fail');
         }
 
-        // Store payment details for later reference (HPOS compatible)
         $order->update_meta_data('_nicky_short_id', $short_id);
         $order->update_meta_data('_nicky_payment_request_id', $payment_request_id);
         $order->update_meta_data('_nicky_blockchain_asset_id', $selected_asset_id);
@@ -846,19 +684,18 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         
         $order->add_order_note(sprintf(
             'Nicky PaymentRequest created. ShortId: %s, RequestId: %s, Asset: %s, Amount: %s %s (converted from %s %s), Quote ID: %s',
-            $short_id,
-            $payment_request_id,
-            $selected_asset_id,
-            $amount_crypto,
-            $selected_asset_id,
-            $amount_shop_currency,
-            $shop_currency,
-            $quote_id
+            sanitize_text_field($short_id),
+            sanitize_text_field($payment_request_id),
+            sanitize_text_field($selected_asset_id),
+            floatval($amount_crypto),
+            sanitize_text_field($selected_asset_id),
+            floatval($amount_shop_currency),
+            sanitize_text_field($shop_currency),
+            sanitize_text_field($quote_id)
         ));
         
-        $order->update_status('on-hold', sprintf('Awaiting Nicky payment (shortId: %s)', $short_id));
+        $order->update_status('on-hold', sprintf('Awaiting Nicky payment (shortId: %s)', sanitize_text_field($short_id)));
 
-        // Empty cart
         WC()->cart->empty_cart();
 
         $redirect_url = 'https://pay.nicky.me/home?paymentId=' . urlencode($short_id);
@@ -871,11 +708,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         );
     }
 
-    /**
-     * Process payment request
-     */
     private function process_payment_request($order, $card_number, $card_expiry, $card_cvc) {
-        // Card processing removed; redirect flow used instead.
         return array(
             'success' => false,
             'transaction_id' => '',
@@ -883,9 +716,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         );
     }
 
-    /**
-     * Save transaction details
-     */
     private function save_transaction($order_id, $payment_result) {
         global $wpdb;
 
@@ -906,25 +736,11 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         );
     }
 
-    /**
-     * Get the shop's currency as a blockchain asset ID
-     * Converts WooCommerce currency to format "CURRENCY.CURRENCY" (e.g., "EUR.EUR")
-     * 
-     * @return string Blockchain asset ID for shop currency
-     */
     private function get_shop_currency_asset_id() {
         $currency = get_woocommerce_currency(); // e.g., "EUR", "USD"
         return $currency . '.' . $currency;
     }
 
-    /**
-     * Get conversion quote from Nicky API
-     * Calls /api/public/ConversionRate/get-quote to convert amount from shop currency to cryptocurrency
-     * 
-     * @param float $amount Amount in shop currency to convert
-     * @param string $target_asset_id Target blockchain asset ID (e.g., "BTC.BTC")
-     * @return array|WP_Error Quote response where 'price' contains the converted amount, or WP_Error on failure
-     */
     private function get_conversion_quote($amount, $target_asset_id) {
         $shop_currency_asset_id = $this->get_shop_currency_asset_id();
 
@@ -940,7 +756,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return $response;
         }
 
-        // Validate response structure
         if (!isset($response['price']) || !isset($response['id'])) {
             return new WP_Error('invalid_quote', 'Invalid conversion quote response from API');
         }
@@ -948,9 +763,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         return $response;
     }
 
-    /**
-     * API POST wrapper - Swagger/OpenAPI compliant
-     */
     private function api_post($path, $body = array()) {
         $url = rtrim($this->api_base_url, '/') . $path;
 
@@ -985,13 +797,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return new WP_Error('nicky_api_error', $error_msg);
         }
 
-        // Return decoded response (can be array or null)
         return is_null($decoded) ? array() : $decoded;
     }
 
-    /**
-     * API GET wrapper - Swagger/OpenAPI compliant
-     */
     private function api_get($path, $query = array()) {
         $url = rtrim($this->api_base_url, '/') . $path;
         if (!empty($query)) {
@@ -1027,13 +835,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return new WP_Error('nicky_api_error', $error_msg);
         }
 
-        // Return decoded response (can be array or null)
         return is_null($decoded) ? array() : $decoded;
     }
 
-    /**
-     * API POST wrapper with explicit API key - for webhook management
-     */
     private function api_post_with_key($path, $body = array(), $api_key = '') {
         $url = rtrim($this->api_base_url, '/') . $path;
 
@@ -1068,13 +872,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return new WP_Error('nicky_api_error', $error_msg);
         }
 
-        // Return decoded response (can be array or null)
         return is_null($decoded) ? array() : $decoded;
     }
 
-    /**
-     * API GET wrapper with explicit API key - for webhook management
-     */
     private function api_get_with_key($path, $query = array(), $api_key = '') {
         $url = rtrim($this->api_base_url, '/') . $path;
         if (!empty($query)) {
@@ -1110,17 +910,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return new WP_Error('nicky_api_error', $error_msg);
         }
 
-        // Return decoded response (can be array or null)
         return is_null($decoded) ? array() : $decoded;
     }
 
-    /**
-     * Webhook handler for payment notifications
-     * Endpoint: ?wc-api=wc_gateway_nicky
-     * Handles: PaymentRequest_StatusChanged webhook from Nicky API
-     */
     public function webhook_handler() {
-        // Log webhook call for debugging
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log('Nicky Webhook Handler called. Method: ' . sanitize_key(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '')); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             error_log('Nicky Webhook GET params: ' . print_r(array_map('sanitize_text_field', $_GET), true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r
@@ -1129,50 +922,53 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         
         $raw_body = file_get_contents('php://input');
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook raw body: ' . $raw_body); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            $sanitized_body = sanitize_text_field(substr($raw_body, 0, 500));
+            error_log('Nicky Webhook raw body: ' . $sanitized_body); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
         
         $data = json_decode($raw_body, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE && !empty($raw_body)) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Nicky Webhook error: Invalid JSON - ' . json_last_error_msg()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            }
+        }
 
-        // If JSON decode fails, try to get data from GET/POST
         if (empty($data)) {
             $data = array_map('sanitize_text_field', $_GET + $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
 
-        // Log parsed data
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log('Nicky Webhook parsed data: ' . print_r($data, true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r
         }
 
-        // Validate webhook type (support both formats: webHookType and WebHookType)
-        $webhook_type = $data['WebHookType'] ?? $data['webHookType'] ?? $data['webhookType'] ?? '';
+        $webhook_type = sanitize_key($data['WebHookType'] ?? $data['webHookType'] ?? $data['webhookType'] ?? '');
 
         if (empty($webhook_type)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook error: missing_webhook_type');
+                error_log('Nicky Webhook error: missing_webhook_type'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             status_header(400);
             echo 'missing_webhook_type';
             exit;
         }
         
-        error_log('Nicky Webhook type: ' . $webhook_type);
+        error_log('Nicky Webhook type: ' . sanitize_key($webhook_type)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 
         if ($webhook_type !== 'PaymentRequest_StatusChanged') {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook: ignored (type: ' . $webhook_type . ')');
+                error_log('Nicky Webhook: ignored (type: ' . sanitize_key($webhook_type) . ')'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             status_header(200);
             echo 'ignored';
             exit;
         }
 
-        // Extract itemId (PaymentRequest ID) from webhook payload (support both formats)
-        $payment_request_id = $data['ItemId'] ?? $data['itemId'] ?? '';
+        $payment_request_id = sanitize_text_field($data['ItemId'] ?? $data['itemId'] ?? '');
         
         if (empty($payment_request_id)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook error: missing_item_id');
+                error_log('Nicky Webhook error: missing_item_id'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             status_header(400);
             echo 'missing_item_id';
@@ -1180,40 +976,37 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
         
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook PaymentRequest ID: ' . $payment_request_id);
+            error_log('Nicky Webhook PaymentRequest ID: ' . sanitize_text_field($payment_request_id)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
 
-        // Get status change data (support both formats: Data and data)
         $webhook_data = $data['Data'] ?? $data['data'] ?? array();
-        $previous_status = $webhook_data['PreviousStatus'] ?? $webhook_data['previousStatus'] ?? '';
-        $new_status = $webhook_data['NewStatus'] ?? $webhook_data['newStatus'] ?? '';
+        $previous_status = sanitize_text_field($webhook_data['PreviousStatus'] ?? $webhook_data['previousStatus'] ?? '');
+        $new_status = sanitize_text_field($webhook_data['NewStatus'] ?? $webhook_data['newStatus'] ?? '');
         
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook status change: ' . $previous_status . ' → ' . $new_status);
+            error_log('Nicky Webhook status change: ' . sanitize_text_field($previous_status) . ' → ' . sanitize_text_field($new_status)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
 
-        // If NewStatus is "Finished", we can directly complete the payment without additional API call
         if ($new_status === 'Finished') {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook: Payment finished, fetching details from API');
+                error_log('Nicky Webhook: Payment finished, fetching details from API'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             
-            // Query API to get shortId for finding the order
             $api_resp = $this->api_get('/api/public/PaymentRequestPublicApi/get-by-id', array('id' => $payment_request_id));
             
             if (is_wp_error($api_resp)) {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook error: API error - ' . $api_resp->get_error_message());
+                    error_log('Nicky Webhook error: API error - ' . sanitize_text_field($api_resp->get_error_message())); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
                 status_header(500);
                 echo 'api_error';
                 exit;
             }
 
-            $short_id = $api_resp['bill']['shortId'] ?? '';
+            $short_id = sanitize_text_field($api_resp['bill']['shortId'] ?? '');
             if (empty($short_id)) {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook error: missing shortId in API response');
+                    error_log('Nicky Webhook error: missing shortId in API response'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
                 status_header(500);
                 echo 'missing_short_id';
@@ -1221,10 +1014,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             }
             
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook: Found shortId: ' . $short_id);
+                error_log('Nicky Webhook: Found shortId: ' . sanitize_text_field($short_id)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
 
-            // Find order by shortId
             $orders = wc_get_orders(array(
                 'limit' => 1,
                 'meta_key' => '_nicky_short_id',
@@ -1233,7 +1025,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
             if (empty($orders)) {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook error: Order not found for shortId: ' . $short_id);
+                    error_log('Nicky Webhook error: Order not found for shortId: ' . sanitize_text_field($short_id)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
                 status_header(404);
                 echo 'order_not_found';
@@ -1242,25 +1034,24 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
             $order = $orders[0];
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook: Found order #' . $order->get_id());
+                error_log('Nicky Webhook: Found order #' . absint($order->get_id())); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
 
-            // Complete the payment
             if (!$order->is_paid()) {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook: Completing payment for order #' . $order->get_id());
+                    error_log('Nicky Webhook: Completing payment for order #' . absint($order->get_id())); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
                 $order->payment_complete();
                 $order->add_order_note(sprintf(
                     'Payment completed via Nicky Webhook. PaymentRequest ID: %s, Status: %s → %s, ShortId: %s',
-                    $payment_request_id,
-                    $previous_status,
-                    $new_status,
-                    $short_id
+                    sanitize_text_field($payment_request_id),
+                    sanitize_text_field($previous_status),
+                    sanitize_text_field($new_status),
+                    sanitize_text_field($short_id)
                 ));
             } else {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook: Order #' . $order->get_id() . ' already paid');
+                    error_log('Nicky Webhook: Order #' . absint($order->get_id()) . ' already paid'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
             }
 
@@ -1269,38 +1060,35 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             exit;
         }
 
-        // For other statuses, get full details and process accordingly
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook: Processing status change, fetching details from API');
+            error_log('Nicky Webhook: Processing status change, fetching details from API'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
         $api_resp = $this->api_get('/api/public/PaymentRequestPublicApi/get-by-id', array('id' => $payment_request_id));
         
         if (is_wp_error($api_resp)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook error: API error - ' . $api_resp->get_error_message());
+                error_log('Nicky Webhook error: API error - ' . sanitize_text_field($api_resp->get_error_message())); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             status_header(500);
             echo 'api_error';
             exit;
         }
 
-        // Extract bill shortId and payment details from API response
-        $short_id = $api_resp['bill']['shortId'] ?? '';
-        $status = $api_resp['status'] ?? '';
-        $open_amount = $api_resp['openAmountNative'] ?? null;
+        $short_id = sanitize_text_field($api_resp['bill']['shortId'] ?? '');
+        $status = sanitize_text_field($api_resp['status'] ?? '');
+        $open_amount = isset($api_resp['openAmountNative']) ? floatval($api_resp['openAmountNative']) : null;
 
         if (empty($short_id)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook error: missing shortId in API response');
+                error_log('Nicky Webhook error: missing shortId in API response'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             status_header(500);
             echo 'missing_short_id';
             exit;
         }
         
-        error_log('Nicky Webhook: Found shortId: ' . $short_id . ', Status: ' . $status);
+        error_log('Nicky Webhook: Found shortId: ' . sanitize_text_field($short_id) . ', Status: ' . sanitize_text_field($status)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 
-        // Find order by shortId
         $orders = wc_get_orders(array(
             'limit' => 1,
             'meta_key' => '_nicky_short_id',
@@ -1309,7 +1097,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
         if (empty($orders)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky Webhook error: Order not found for shortId: ' . $short_id);
+                error_log('Nicky Webhook error: Order not found for shortId: ' . sanitize_text_field($short_id)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             status_header(404);
             echo 'order_not_found';
@@ -1318,86 +1106,79 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
         $order = $orders[0];
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook: Found order #' . $order->get_id());
+            error_log('Nicky Webhook: Found order #' . absint($order->get_id())); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
 
-        // Process other payment statuses
         if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('Nicky Webhook: Processing status: ' . $status . ' for order #' . $order->get_id());
+            error_log('Nicky Webhook: Processing status: ' . sanitize_text_field($status) . ' for order #' . absint($order->get_id())); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         }
         switch ($status) {
             case 'Finished':
-                // This should not happen since we handle it above, but keep for safety
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook: Handling Finished status (fallback)');
+                    error_log('Nicky Webhook: Handling Finished status (fallback)'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
                 if (!$order->is_paid()) {
                     $order->payment_complete();
                     $order->add_order_note(sprintf(
                         'Payment completed via Nicky Webhook. ShortId: %s, Status: %s → %s, Open Amount: %s',
-                        $short_id,
-                        $previous_status,
-                        $new_status,
-                        $open_amount
+                        sanitize_text_field($short_id),
+                        sanitize_text_field($previous_status),
+                        sanitize_text_field($new_status),
+                        $open_amount !== null ? floatval($open_amount) : 'N/A'
                     ));
                 }
                 break;
                 
             case 'Canceled':
                 if (defined('WP_DEBUG') && WP_DEBUG) {
-                    error_log('Nicky Webhook: Handling Canceled status');
+                    error_log('Nicky Webhook: Handling Canceled status'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 }
                 if (!$order->is_paid()) {
                     $order->update_status('cancelled', sprintf(
                         'Payment cancelled via Nicky (shortId: %s)',
-                        $short_id
+                        sanitize_text_field($short_id)
                     ));
                 }
                 break;
                 
             case 'PaymentValidationRequired':
-                error_log('Nicky Webhook: Handling PaymentValidationRequired status');
+                error_log('Nicky Webhook: Handling PaymentValidationRequired status'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 $order->update_status('on-hold', sprintf(
                     'Payment validation required (shortId: %s)',
-                    $short_id
+                    sanitize_text_field($short_id)
                 ));
-                // Set validation flag for dashboard widget (HPOS compatible)
                 $order->update_meta_data('_nicky_requires_validation', 'yes');
                 $order->save();
                 break;
                 
             default:
-                error_log('Nicky Webhook: Handling unknown status: ' . $status);
+                error_log('Nicky Webhook: Handling unknown status: ' . sanitize_text_field($status)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 $order->add_order_note(sprintf(
                     'Nicky status update: %s → %s (shortId: %s)',
-                    $previous_status,
-                    $new_status,
-                    $short_id
+                    sanitize_text_field($previous_status),
+                    sanitize_text_field($new_status),
+                    sanitize_text_field($short_id)
                 ));
         }
 
-        error_log('Nicky Webhook: Successfully processed webhook');
+        error_log('Nicky Webhook: Successfully processed webhook'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         status_header(200);
         echo 'ok';
         exit;
     }
 
-    /**
-     * Poll PaymentRequest status by shortId (for frontend status checking)
-     * Uses Swagger endpoint: GET /api/public/PaymentRequestPublicApi/get-by-short-id
-     */
     public function poll_order_by_short_id($short_id) {
-        // Use get-by-short-id endpoint (according to Swagger spec)
+        $short_id = sanitize_text_field($short_id);
+        
         $api_resp = $this->api_get('/api/public/PaymentRequestPublicApi/get-by-short-id', array('shortId' => $short_id));
         
         if (is_wp_error($api_resp)) {
             return $api_resp;
         }
 
-        // Extract status from PaymentRequest response
-        $status = $api_resp['status'] ?? '';
-        $open_amount = $api_resp['openAmountNative'] ?? null;
-        $bill_short_id = $api_resp['bill']['shortId'] ?? $short_id;
+        $status = sanitize_text_field($api_resp['status'] ?? '');
+        $open_amount = isset($api_resp['openAmountNative']) ? floatval($api_resp['openAmountNative']) : null;
+        $bill_short_id = sanitize_text_field($api_resp['bill']['shortId'] ?? $short_id);
 
         $orders = wc_get_orders(array(
             'limit' => 1, 
@@ -1406,22 +1187,20 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         ));
         
         if (empty($orders)) {
-            return new WP_Error('order_not_found', 'Order not found for shortId ' . $short_id);
+            return new WP_Error('order_not_found', 'Order not found for shortId ' . sanitize_text_field($short_id));
         }
 
         $order = $orders[0];
         
-        // Process based on status
-        // When status is 'Finished', the payment is considered complete regardless of openAmount
         switch ($status) {
             case 'Finished':
                 if (!$order->is_paid()) {
                     $order->payment_complete();
                     $order->add_order_note(sprintf(
                         'Payment completed via Nicky (polled). ShortId: %s, Status: %s, Open Amount: %s',
-                        $short_id,
-                        $status,
-                        $open_amount
+                        sanitize_text_field($short_id),
+                        sanitize_text_field($status),
+                        $open_amount !== null ? floatval($open_amount) : 'N/A'
                     ));
                 }
                 break;
@@ -1430,7 +1209,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 if (!$order->is_paid()) {
                     $order->update_status('cancelled', sprintf(
                         'Payment cancelled (shortId: %s)',
-                        $short_id
+                        sanitize_text_field($short_id)
                     ));
                 }
                 break;
@@ -1442,13 +1221,11 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                         $short_id
                     ));
                 }
-                // Set validation flag for dashboard widget (HPOS compatible)
                 $order->update_meta_data('_nicky_requires_validation', 'yes');
                 $order->save();
                 break;
         }
 
-        // Refresh order to get updated status
         $order = wc_get_order($order->get_id());
         
         return array(
@@ -1458,10 +1235,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         );
     }
 
-    /**
-     * AJAX handler to check payment status (for frontend polling)
-     * Called from checkout-handler.js
-     */
     public function ajax_check_payment_status() {
         check_ajax_referer('nicky_payment_nonce', 'nonce');
         
@@ -1484,14 +1257,11 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return;
         }
         
-        // Note: Frontend polling is disabled - this AJAX handler is kept for manual checks only
         
-        // Poll status using get-by-short-id endpoint
-        // This method also updates the WooCommerce order status automatically
         $result = $this->poll_order_by_short_id($short_id);
         
         if (is_wp_error($result)) {
-            wp_send_json_error('API error: ' . $result->get_error_message());
+            wp_send_json_error('API error: ' . sanitize_text_field($result->get_error_message()));
             return;
         }
         
@@ -1499,7 +1269,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         $is_paid = $result['is_paid'] ?? false;
         $open_amount = $result['open_amount'] ?? null;
         
-        // Refresh order object to get latest status (poll_order_by_short_id may have updated it)
         $order = wc_get_order($order_id);
         $order_status = $order->get_status();
         
@@ -1513,10 +1282,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         ));
     }
     
-    /**
-     * Output for the order received page (Thank you page)
-     * Shows payment instructions and deposit address
-     */
     public function thankyou_page($order_id) {
         if (!$order_id) return;
         
@@ -1536,7 +1301,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 echo '<p style="margin: 0;"><strong>' . esc_html(__('Payment ID:', 'nicky-me')) . '</strong> <code style="background: #f0f0f0; padding: 2px 6px;">' . esc_html($short_id) . '</code></p>';
                 echo '</div>';
                 
-                // Try to get deposit address
                 if (!empty($blockchain_asset_id)) {
                     $address_resp = $this->api_get('/deposit-address', array('assetId' => $blockchain_asset_id));
                     
@@ -1563,7 +1327,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             echo '</p>';
             echo '</div>';
             
-            // Frontend polling disabled - all handled by backend cron job
         } elseif ($order->has_status('completed') || $order->has_status('processing')) {
             echo '<div class="nicky-payment-complete" style="background: #e8f5e9; padding: 20px; margin: 20px 0; border-left: 4px solid #4caf50;">';
             echo '<h3 style="margin-top: 0; color: #2e7d32;">✅ ' . esc_html(__('Payment Complete', 'nicky-me')) . '</h3>';
@@ -1575,9 +1338,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
     }
     
-    /**
-     * Add content to the WC emails.
-     */
     public function email_instructions($order, $sent_to_admin, $plain_text = false) {
         if (!$sent_to_admin && $this->id === $order->get_payment_method() && $order->has_status('pending')) {
             $short_id = get_post_meta($order->get_id(), '_nicky_short_id', true);
@@ -1604,9 +1364,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
     }
 
-    /**
-     * Add custom cron schedule intervals
-     */
     public function add_cron_schedules($schedules) {
         $schedules['every_30_seconds'] = array(
             'interval' => 30,
@@ -1615,17 +1372,11 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         return $schedules;
     }
 
-    /**
-     * Schedule WordPress Cron job for automatic payment status checking
-     * Runs every 30 seconds to check pending Nicky payments
-     */
     public function schedule_payment_status_cron() {
-        // Only schedule if gateway is enabled
         if ($this->enabled !== 'yes') {
             return;
         }
 
-        // Check if WP Cron is disabled
         if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 error_log('Nicky Gateway: WARNING - WP Cron is disabled (DISABLE_WP_CRON = true). Cron job will not run.');
@@ -1634,7 +1385,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
         $next_scheduled = wp_next_scheduled('nicky_check_payment_status_cron');
         if (!$next_scheduled) {
-            // Schedule to run every 30 seconds
             $scheduled = wp_schedule_event(time(), 'every_30_seconds', 'nicky_check_payment_status_cron');
             if ($scheduled === false) {
                 if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -1644,15 +1394,8 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
     }
 
-    /**
-     * Cron job handler to check payment status for pending orders
-     * Checks all pending Nicky orders and updates their status
-     * Runs every 30 seconds - this is the primary method for status updates
-     */
     public function cron_check_payment_status() {
 
-        // Find all orders with pending Nicky payments
-        // Look for orders that are 'pending' and have Nicky short_id
         $query_args = array(
             'limit' => 50, // Limit to avoid performance issues
             'status' => array('pending', 'on-hold'),
@@ -1694,11 +1437,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 continue;
             }
 
-            // Update last check timestamp to avoid duplicate checks (HPOS compatible)
             $order->update_meta_data('_nicky_last_cron_check', time());
             $order->save();
 
-            // Check payment status via API
             $result = $this->poll_order_by_short_id($short_id);
 
             if (is_wp_error($result)) {
@@ -1708,7 +1449,6 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             $status = $result['status'] ?? '';
             $is_paid = $result['is_paid'] ?? false;
 
-            // Update order if payment is finished
             if ($status === 'Finished' && $is_paid) {
                 $order->payment_complete();
                 $order->update_status('processing', __('Payment completed via Nicky (backend cron)', 'nicky-me'));

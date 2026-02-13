@@ -86,7 +86,7 @@ class Nicky_Payment_Simple_Blocks {
         // Check for errors
         if (is_wp_error($response)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('Nicky API Error: ' . $response->get_error_message()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                error_log('Nicky API Error: ' . sanitize_text_field($response->get_error_message())); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             }
             return self::get_fallback_assets();
         }
