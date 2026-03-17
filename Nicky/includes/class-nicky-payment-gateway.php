@@ -1283,7 +1283,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             echo '<p style="margin-top: 20px; font-size: 13px; color: #666;">';
             echo '🔄 ' . esc_html(__('Payment status is automatically updated via webhooks. Please refresh this page to see updates.', 'nicky-me'));
             echo '</p>';
-            echo '</div>'
+            echo '</div>';
         } else if ($order->has_status('completed') || $order->has_status('processing')) {
             echo '<div class="nicky-payment-complete" style="background: #e8f5e9; padding: 20px; margin: 20px 0; border-left: 4px solid #4caf50;">';
             echo '<h3 style="margin-top: 0; color: #2e7d32;">✅ ' . esc_html(__('Payment Complete', 'nicky-me')) . '</h3>';
