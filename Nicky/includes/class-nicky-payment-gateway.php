@@ -908,6 +908,17 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
     }
 
     public function webhook_handler() {
+        // Whitelist: only accept webhooks from Nicky.me server IP
+        $allowed_ip = '20.76.240.81';
+        $remote_ip  = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+        if ($remote_ip !== $allowed_ip) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Nicky Webhook blocked: unauthorized IP ' . $remote_ip); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+            }
+            status_header(403);
+            exit;
+        }
+
         if (defined('WP_DEBUG') && WP_DEBUG) {
             error_log('Nicky Webhook Handler called. Method: ' . sanitize_key(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '')); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
             error_log('Nicky Webhook GET params: ' . print_r(array_map('sanitize_text_field', $_GET), true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r,WordPress.Security.NonceVerification.Recommended -- Webhook from external service, no nonce
