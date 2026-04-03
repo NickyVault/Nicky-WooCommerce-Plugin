@@ -24,7 +24,7 @@ In short: the plugin adds a Nicky.me crypto gateway to WooCommerce. It supports 
 
 ## Quick overview
 
-- Main plugin file: `nicky-payment-gateway.php`
+- Main plugin file: `Nicky/nicky-me.php`
 - Settings: WooCommerce → Settings → Payments → Nicky (or "Nicky Payment")
 - Requirements: WordPress + WooCommerce
 

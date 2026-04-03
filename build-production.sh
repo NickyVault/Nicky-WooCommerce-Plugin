@@ -27,7 +27,7 @@ NC='\033[0m' # No Color
 PLUGIN_DIR="Nicky"
 OUTPUT_ZIP="Nicky.zip"
 BUILD_DIR="build_temp"
-MAIN_FILE="$PLUGIN_DIR/nicky-payment-gateway.php"
+MAIN_FILE="$PLUGIN_DIR/nicky-me.php"
 README_FILE="$PLUGIN_DIR/readme.txt"
 
 echo -e "${BLUE}========================================${NC}"
@@ -124,7 +124,7 @@ if [ "$UPDATE_VERSION" = true ] && [ "$NEW_VERSION" != "$CURRENT_VERSION" ]; the
         sed -i "s/^Stable tag: .*/Stable tag: $NEW_VERSION/" "$README_FILE"
     fi
     
-    echo -e "${GREEN}✓ Updated nicky-payment-gateway.php${NC}"
+    echo -e "${GREEN}✓ Updated nicky-me.php${NC}"
     echo -e "${GREEN}✓ Updated readme.txt${NC}"
     
     # Remove backup files

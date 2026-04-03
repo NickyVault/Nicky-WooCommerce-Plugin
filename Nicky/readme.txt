@@ -45,6 +45,10 @@ No sensitive customer payment information (wallet addresses, private keys) is st
 * Compatible with WooCommerce Blocks
 * HPOS (High-Performance Order Storage) compatible
 
+= Source code and development =
+
+This plugin is distributed with complete, human-readable source code (PHP, JavaScript, and CSS) in the plugin package—no obfuscated or packed code. For optional public development, issue tracking, or build documentation, see: https://github.com/upcode-at/Nicky-Woocommerce-Payment-Plugin
+
 == Installation ==
 
 1. Upload the plugin files to the `/wp-content/plugins/nicky-me` directory, or install the plugin through the WordPress plugins screen directly.
@@ -93,6 +97,8 @@ Yes, you can configure test mode settings in the gateway configuration. Contact 
 * Enhanced security and sanitization
 * Improved compatibility declarations
 * Updated documentation and service disclosures
+* Dashboard validation widget: optional hide/show per user  
+* Source code / development note in readme  
 
 = 1.0.2 =
 * Updated WordPress compatibility (tested up to WP 6.9)
@@ -113,6 +119,9 @@ Yes, you can configure test mode settings in the gateway configuration. Contact 
 * HPOS compatibility
 
 == Upgrade Notice ==
+
+= 1.0.7 =
+Maintenance release: guideline-aligned dashboard widget controls, documentation, and settings link fixes.
 
 = 1.0.0 =
 Initial release of Nicky.me payment gateway for WooCommerce.

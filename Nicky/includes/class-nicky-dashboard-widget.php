@@ -17,6 +17,7 @@ class Nicky_Payment_Dashboard_Widget {
     public function __construct() {
         add_action('wp_dashboard_setup', array($this, 'add_dashboard_widget'));
         add_action('wp_ajax_nicky_mark_order_paid', array($this, 'ajax_mark_order_paid'));
+        add_action('wp_ajax_nicky_validation_widget_visibility', array($this, 'ajax_validation_widget_visibility'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_dashboard_scripts'));
     }
     
@@ -44,16 +45,25 @@ class Nicky_Payment_Dashboard_Widget {
      * Display the dashboard widget content
      */
     public function display_dashboard_widget() {
+        $user_id = get_current_user_id();
+        if (get_user_meta($user_id, 'nicky_hide_validation_dashboard', true) === '1') {
+            echo '<div id="nicky-dashboard-widget" class="nicky-widget-dismissed">';
+            echo '<p>' . esc_html__('The payment validation list is hidden for your account.', 'nicky-me') . '</p>';
+            echo '<p><button type="button" class="button button-secondary nicky-show-validation-widget">' . esc_html__('Show widget', 'nicky-me') . '</button></p>';
+            echo '</div>';
+            return;
+        }
+
         // Get orders requiring validation
         $validation_orders = $this->get_validation_required_orders();
-        
+
         echo '<div id="nicky-dashboard-widget">';
-        
+
         if (empty($validation_orders)) {
             echo '<p class="nicky-no-validation">✅ No orders requiring payment validation.</p>';
         } else {
             echo '<p class="nicky-validation-info">ℹ️ <strong>' . count($validation_orders) . '</strong> order(s) require payment validation:</p>';
-            
+
             echo '<table class="nicky-validation-table">';
             echo '<thead>';
             echo '<tr>';
@@ -65,15 +75,16 @@ class Nicky_Payment_Dashboard_Widget {
             echo '</tr>';
             echo '</thead>';
             echo '<tbody>';
-            
+
             foreach ($validation_orders as $order) {
                 $this->display_validation_order_row($order);
             }
-            
+
             echo '</tbody>';
             echo '</table>';
         }
-        
+
+        echo '<p class="nicky-widget-footer"><button type="button" class="button-link nicky-hide-validation-widget">' . esc_html__('Hide this widget', 'nicky-me') . '</button></p>';
         echo '</div>';
     }
     
@@ -216,7 +227,31 @@ class Nicky_Payment_Dashboard_Widget {
             'order_id' => $order_id
         ));
     }
-    
+
+    /**
+     * AJAX: hide or show the validation dashboard widget for the current user (guideline 11: dismissible widgets).
+     */
+    public function ajax_validation_widget_visibility() {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'] ?? '')), 'nicky_dashboard_nonce')) {
+            wp_send_json_error(array('message' => 'Invalid nonce'));
+            return;
+        }
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(array('message' => 'Insufficient permissions'));
+            return;
+        }
+
+        $hide = isset($_POST['hide']) && '1' === sanitize_text_field(wp_unslash($_POST['hide']));
+        if ($hide) {
+            update_user_meta(get_current_user_id(), 'nicky_hide_validation_dashboard', '1');
+        } else {
+            delete_user_meta(get_current_user_id(), 'nicky_hide_validation_dashboard');
+        }
+
+        wp_send_json_success();
+    }
+
     /**
      * Enqueue scripts and styles for dashboard widget
      */
@@ -283,6 +318,16 @@ class Nicky_Payment_Dashboard_Widget {
         #nicky-dashboard-widget a:hover {
             text-decoration: underline;
         }
+
+        .nicky-widget-footer {
+            margin: 12px 0 0 0;
+            padding-top: 8px;
+            border-top: 1px solid #e1e1e1;
+        }
+
+        .nicky-widget-dismissed p {
+            margin: 0 0 8px 0;
+        }
         ';
         
         wp_add_inline_style('wp-admin', $css);
@@ -340,6 +385,32 @@ class Nicky_Payment_Dashboard_Widget {
                         alert('An error occurred while processing the request.');
                         button.prop('disabled', false).text(originalText);
                     }
+                });
+            });
+
+            $(document).on('click', '.nicky-hide-validation-widget', function(e) {
+                e.preventDefault();
+                var btn = $(this);
+                btn.prop('disabled', true);
+                $.post(nickyAjaxUrl, {
+                    action: 'nicky_validation_widget_visibility',
+                    nonce: '" . $nonce . "',
+                    hide: '1'
+                }).always(function() {
+                    window.location.reload();
+                });
+            });
+
+            $(document).on('click', '.nicky-show-validation-widget', function(e) {
+                e.preventDefault();
+                var btn = $(this);
+                btn.prop('disabled', true);
+                $.post(nickyAjaxUrl, {
+                    action: 'nicky_validation_widget_visibility',
+                    nonce: '" . $nonce . "',
+                    hide: '0'
+                }).always(function() {
+                    window.location.reload();
                 });
             });
         });
