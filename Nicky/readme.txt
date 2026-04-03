@@ -3,7 +3,7 @@ Contributors: NickyVault
 Tags: woocommerce, payment gateway, cryptocurrency, bitcoin, ethereum
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.8
+Stable tag: 1.0.9
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -47,7 +47,7 @@ No sensitive customer payment information (wallet addresses, private keys) is st
 
 = Source code and development =
 
-This plugin is distributed with complete, human-readable source code (PHP, JavaScript, and CSS) in the plugin package—no obfuscated or packed code. For optional public development, issue tracking, or build documentation, see: https://github.com/upcode-at/Nicky-Woocommerce-Payment-Plugin
+This plugin is distributed with complete, human-readable source code (PHP, JavaScript, and CSS) in the plugin package—no obfuscated or packed code. For optional public development, issue tracking, or build documentation, see: https://github.com/NickyVault/Nicky-WooCommerce-Plugin
 
 == Installation ==
 
@@ -91,6 +91,11 @@ The plugin stores minimal transaction data locally (order ID, transaction ID, pa
 Yes, you can configure test mode settings in the gateway configuration. Contact Nicky.me support for test API credentials.
 
 == Changelog ==
+
+= 1.0.9 =
+* Fixed Plugin URI to valid public URL (GitHub repository)
+* Fixed invalid Repository URL in readme.txt
+* Escaped nonce value with esc_js() in inline JavaScript (XSS hardening)
 
 = 1.0.8 =
 * Fixed PHP syntax error in thank-you page (copy-address button string handling)

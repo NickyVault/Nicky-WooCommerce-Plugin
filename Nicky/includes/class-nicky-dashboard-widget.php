@@ -358,7 +358,7 @@ class Nicky_Payment_Dashboard_Widget {
                     data: {
                         action: 'nicky_mark_order_paid',
                         order_id: orderId,
-                        nonce: '" . $nonce . "'
+                        nonce: '" . esc_js($nonce) . "'
                     },
                     success: function(response) {
                         if (response.success) {
@@ -394,7 +394,7 @@ class Nicky_Payment_Dashboard_Widget {
                 btn.prop('disabled', true);
                 $.post(nickyAjaxUrl, {
                     action: 'nicky_validation_widget_visibility',
-                    nonce: '" . $nonce . "',
+                    nonce: '" . esc_js($nonce) . "',
                     hide: '1'
                 }).always(function() {
                     window.location.reload();
@@ -407,7 +407,7 @@ class Nicky_Payment_Dashboard_Widget {
                 btn.prop('disabled', true);
                 $.post(nickyAjaxUrl, {
                     action: 'nicky_validation_widget_visibility',
-                    nonce: '" . $nonce . "',
+                    nonce: '" . esc_js($nonce) . "',
                     hide: '0'
                 }).always(function() {
                     window.location.reload();
