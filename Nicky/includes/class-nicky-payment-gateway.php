@@ -1282,20 +1282,20 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                         echo '<p><strong>' . esc_html(__('Asset:', 'nicky-me')) . '</strong> ' . esc_html($asset_ticker) . '</p>';
                         echo '<p><strong>' . esc_html(__('Address:', 'nicky-me')) . '</strong><br>';
                         echo '<code style="background: white; padding: 8px; display: inline-block; margin: 5px 0; word-break: break-all; font-size: 12px;">' . esc_html($address) . '</code></p>';
-                        echo '<button type="button" onclick="navigator.clipboard.writeText(\'' . esc_js($address) . '\'); alert(\'Address copied to clipboard!\');" class="button" style="margin-top: 10px;">📋 ' . esc_html(__('Copy Address', 'nicky-me')) . '</button>';
+                        echo '<button type="button" onclick="navigator.clipboard.writeText(' . wp_json_encode($address) . '); alert(' . wp_json_encode(__('Address copied to clipboard!', 'nicky-me')) . ');" class="button" style="margin-top: 10px;">📋 ' . esc_html(__('Copy Address', 'nicky-me')) . '</button>';
                         echo '</div>';
                     }
                 }
-                
+
                 echo '<p style="margin-top: 20px;"><a href="https://pay.nicky.me/home?paymentId=' . urlencode($short_id) . '" target="_blank" class="button button-primary" style="text-decoration: none;">';
                 echo '🔗 ' . esc_html(__('Continue to Payment', 'nicky-me')) . '</a></p>';
             }
-            
+
             echo '<p style="margin-top: 20px; font-size: 13px; color: #666;">';
             echo '🔄 ' . esc_html(__('Payment status is automatically updated via webhooks. Please refresh this page to see updates.', 'nicky-me'));
             echo '</p>';
             echo '</div>';
-        } else if ($order->has_status('completed') || $order->has_status('processing')) {
+        } elseif ($order->has_status('completed') || $order->has_status('processing')) {
             echo '<div class="nicky-payment-complete" style="background: #e8f5e9; padding: 20px; margin: 20px 0; border-left: 4px solid #4caf50;">';
             echo '<h3 style="margin-top: 0; color: #2e7d32;">✅ ' . esc_html(__('Payment Complete', 'nicky-me')) . '</h3>';
             echo '<p>' . esc_html(__('Thank you! Your payment has been received and your order is being processed.', 'nicky-me')) . '</p>';

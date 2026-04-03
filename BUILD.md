@@ -68,11 +68,11 @@ Nicky-WooCommerce-Plugin/
 │   ├── languages/            # ✅ Included in production
 │   ├── readme.txt            # ✅ Required for WordPress.org
 │   ├── README.md             # ✅ Included in production
-│   └── nicky-payment-gateway.php  # ✅ Main plugin file
+│   └── nicky-me.php               # ✅ Main plugin file
 ├── build-production.sh       # Build script
 ├── .buildignore              # Lists files to exclude
 ├── BUILD.md                  # This file
-└── Nicky.zip                 # Generated production ZIP
+└── nicky-me.zip              # Generated production ZIP (directory-expected name)
 
 ```
 
@@ -88,14 +88,14 @@ Nicky-WooCommerce-Plugin/
 # Run the build script
 ./build-production.sh
 
-# This creates Nicky.zip without debug files
-# Upload Nicky.zip to WordPress.org
+# This creates nicky-me.zip without debug files
+# Upload nicky-me.zip to WordPress.org
 ```
 
 ### 3. Testing Production Build
 ```bash
 # Extract and test the production ZIP locally
-unzip -q Nicky.zip -d test_build/
+unzip -q nicky-me.zip -d test_build/
 # Check that debug files are not present
 ls test_build/Nicky/includes/debug*.php
 # Should show: No such file or directory
@@ -117,7 +117,7 @@ rm -f "$BUILD_DIR/$PLUGIN_DIR/your-file-to-exclude.php"
 Edit `build-production.sh`:
 
 ```bash
-OUTPUT_ZIP="nicky-payment-gateway.zip"  # Instead of "Nicky.zip"
+OUTPUT_ZIP="custom-name.zip"  # Default in script is nicky-me.zip
 ```
 
 ## Version Management
@@ -126,7 +126,7 @@ OUTPUT_ZIP="nicky-payment-gateway.zip"  # Instead of "Nicky.zip"
 
 The build script automatically updates version numbers in:
 
-1. **nicky-payment-gateway.php**
+1. **nicky-me.php**
    - Plugin header: `* Version: X.X.X`
    - Constant: `define('NICKY_PAYMENT_GATEWAY_VERSION', 'X.X.X');`
 
@@ -205,7 +205,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: plugin-zip
-          path: Nicky.zip
+          path: nicky-me.zip
 ```
 
 ## Troubleshooting
@@ -218,11 +218,11 @@ chmod +x build-production.sh
 ### ZIP file includes unwanted files
 - Check `.buildignore`
 - Update `build-production.sh` exclude rules
-- Run `unzip -l Nicky.zip` to inspect contents
+- Run `unzip -l nicky-me.zip` to inspect contents
 
 ### Need to verify what's in the ZIP
 ```bash
-unzip -l Nicky.zip | grep debug
+unzip -l nicky-me.zip | grep debug
 # Should return no results if debug files are properly excluded
 ```
 
@@ -231,10 +231,10 @@ unzip -l Nicky.zip | grep debug
 Before uploading to WordPress.org, verify:
 
 - [ ] Run `./build-production.sh` to create production ZIP
-- [ ] Version number updated in `nicky-payment-gateway.php`
+- [ ] Version number updated in `nicky-me.php`
 - [ ] Version number updated in `readme.txt`
 - [ ] Changelog updated in `readme.txt`
-- [ ] No debug files in ZIP: `unzip -l Nicky.zip | grep debug`
+- [ ] No debug files in ZIP: `unzip -l nicky-me.zip | grep debug`
 - [ ] External service disclosure present in `readme.txt`
 - [ ] Tested up to version is current (WordPress 6.8+)
 - [ ] File size is reasonable (< 100KB for this plugin)

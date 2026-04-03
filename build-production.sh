@@ -25,7 +25,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 PLUGIN_DIR="Nicky"
-OUTPUT_ZIP="Nicky.zip"
+OUTPUT_ZIP="nicky-me.zip"
 BUILD_DIR="build_temp"
 MAIN_FILE="$PLUGIN_DIR/nicky-me.php"
 README_FILE="$PLUGIN_DIR/readme.txt"

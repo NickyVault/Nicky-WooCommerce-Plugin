@@ -3,7 +3,7 @@ Contributors: NickyVault
 Tags: woocommerce, payment gateway, cryptocurrency, bitcoin, ethereum
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -92,6 +92,11 @@ Yes, you can configure test mode settings in the gateway configuration. Contact 
 
 == Changelog ==
 
+= 1.0.8 =
+* Fixed PHP syntax error in thank-you page (copy-address button string handling)
+* Plugin URI set distinct from Author URI for WordPress.org header checks
+* Production zip is expected as nicky-me.zip for directory submission
+
 = 1.0.7 =
 * Code improvements and WordPress.org review feedback addressed
 * Enhanced security and sanitization
@@ -119,6 +124,9 @@ Yes, you can configure test mode settings in the gateway configuration. Contact 
 * HPOS compatibility
 
 == Upgrade Notice ==
+
+= 1.0.8 =
+Fixes for WordPress.org review: PHP syntax, plugin headers, and packaging filename.
 
 = 1.0.7 =
 Maintenance release: guideline-aligned dashboard widget controls, documentation, and settings link fixes.

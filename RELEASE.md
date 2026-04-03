@@ -22,7 +22,7 @@ Quick reference guide for releasing new versions.
 4. Commit: `git add . && git commit -m "Release v1.0.2"`
 5. Tag: `git tag v1.0.2`
 6. Push: `git push origin main --tags`
-7. Upload `Nicky.zip` to WordPress.org
+7. Upload `nicky-me.zip` to WordPress.org
 
 ### 2. Feature Release (Minor Version: 1.0.x → 1.1.0)
 
@@ -58,7 +58,7 @@ Quick reference guide for releasing new versions.
 
 When you run `./build-production.sh`, these files are updated:
 
-✅ `Nicky/nicky-payment-gateway.php`
+✅ `Nicky/nicky-me.php`
 - Plugin header version
 - NICKY_PAYMENT_GATEWAY_VERSION constant
 
@@ -91,13 +91,13 @@ When you run `./build-production.sh`, these files are updated:
 ./build-production.sh --no-version
 
 # Check current version
-grep "Version:" Nicky/nicky-payment-gateway.php | head -1
+grep "Version:" Nicky/nicky-me.php | head -1
 
 # Verify ZIP contents
-unzip -l Nicky.zip | grep -E "\.php$|readme\.txt"
+unzip -l nicky-me.zip | grep -E "\.php$|readme\.txt"
 
 # Check for debug files (should return nothing)
-unzip -l Nicky.zip | grep debug
+unzip -l nicky-me.zip | grep debug
 ```
 
 ## Semantic Versioning
@@ -130,11 +130,11 @@ Before uploading to WordPress.org:
 
 ```bash
 # Should show NO results
-unzip -l Nicky.zip | grep -E "debug|docker-compose|README-v1"
+unzip -l nicky-me.zip | grep -E "debug|docker-compose|README-v1"
 
 # Should show version X.X.X throughout
-unzip -p Nicky.zip Nicky/nicky-payment-gateway.php | grep "Version:"
-unzip -p Nicky.zip Nicky/readme.txt | grep "Stable tag:"
+unzip -p nicky-me.zip Nicky/nicky-me.php | grep "Version:"
+unzip -p nicky-me.zip Nicky/readme.txt | grep "Stable tag:"
 ```
 
 ## Emergency Hotfix
@@ -212,7 +212,7 @@ No problem! The source files already have the right version:
 
 ```bash
 # Extract and test locally
-unzip Nicky.zip -d test/
+unzip nicky-me.zip -d test/
 # Install in local WordPress environment
 # Verify all features work
 ```
