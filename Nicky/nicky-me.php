@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: Nicky.me
+ * Plugin Name: Nicky
  * Plugin URI: https://github.com/NickyVault/Nicky-WooCommerce-Plugin
  * Description: Secure and reliable payment processing for WooCommerce powered by Nicky.me.
- * Version: 1.11
- * Author: Nicky.me
+ * Version: 1.12
+ * Author: Nicky, LLC
  * Author URI: https://nicky.me
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('NICKY_PAYMENT_GATEWAY_VERSION', '1.11');
+define('NICKY_PAYMENT_GATEWAY_VERSION', '1.12');
 define('NICKY_PAYMENT_GATEWAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('NICKY_PAYMENT_GATEWAY_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
@@ -173,7 +173,7 @@ add_action('rest_api_init', 'nicky_handle_store_api_checkout');
  * Admin notice if WooCommerce is not active
  */
 function nicky_payment_gateway_wc_missing_notice() {
-    echo '<div class="error"><p><strong>Nicky.me</strong> requires WooCommerce to be installed and active. You can download <a href="https://woocommerce.com/" target="_blank">WooCommerce</a> here.</p></div>';
+    echo '<div class="error"><p><strong>Nicky</strong> requires WooCommerce to be installed and active. You can download <a href="https://woocommerce.com/" target="_blank">WooCommerce</a> here.</p></div>';
 }
 
 /**
@@ -183,7 +183,7 @@ function nicky_payment_gateway_activation_notice() {
     if (get_transient('nicky_wc_missing_notice')) {
         delete_transient('nicky_wc_missing_notice');
         deactivate_plugins(plugin_basename(__FILE__));
-        echo '<div class="error"><p><strong>Nicky.me Payment Gateway</strong> requires WooCommerce to be installed and active. The plugin has been deactivated.</p></div>';
+        echo '<div class="error"><p><strong>Nicky Payment Gateway</strong> requires WooCommerce to be installed and active. The plugin has been deactivated.</p></div>';
     }
 }
 add_action('admin_notices', 'nicky_payment_gateway_activation_notice');
@@ -216,7 +216,7 @@ function nicky_payment_gateway_activate() {
     if (empty($gateway_settings)) {
         $default_settings = array(
             'enabled' => 'yes',
-            'title' => 'Nicky.me Payment',
+            'title' => 'Nicky Payment',
             'description' => 'Pay securely with crypto via Nicky.me.',
             'api_key' => '',
             'api_secret' => '',

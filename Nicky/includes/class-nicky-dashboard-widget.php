@@ -32,7 +32,7 @@ class Nicky_Payment_Dashboard_Widget {
         
         wp_add_dashboard_widget(
             'nicky_payment_validation_widget',
-            'Nicky.me Payments',
+            'Nicky Payments',
             array($this, 'display_dashboard_widget'),
             null,
             null,

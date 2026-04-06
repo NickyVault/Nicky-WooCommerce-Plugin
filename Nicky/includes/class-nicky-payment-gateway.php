@@ -9,7 +9,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         $this->id                 = 'nicky';
         $this->icon               = $this->get_gateway_icon();
         $this->has_fields         = true;
-        $this->method_title       = 'Nicky.me';
+        $this->method_title       = 'Nicky';
         $this->method_description = 'Accept payments using Nicky.me - secure, fast and reliable payment processing';
         $this->supports           = array(
             'products',
@@ -22,7 +22,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         $this->init_form_fields();
         $this->init_settings();
 
-        $this->title                = $this->get_option('title', 'Nicky.me Payment');
+        $this->title                = $this->get_option('title', 'Nicky Payment');
         $this->description          = $this->get_option('description', 'Pay securely with crypto via Nicky.me.');
         $this->enabled              = $this->get_option('enabled', 'no');
         
@@ -313,14 +313,14 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             'enabled' => array(
                 'title'   => 'Enable/Disable',
                 'type'    => 'checkbox',
-                'label'   => 'Enable Nicky.me',
+                'label'   => 'Enable Nicky',
                 'default' => 'yes'
             ),
             'title' => array(
                 'title'       => 'Title',
                 'type'        => 'text',
                 'description' => 'This controls the title which the user sees during checkout.',
-                'default'     => 'Nicky.me Payment',
+                'default'     => 'Nicky Payment',
                 'desc_tip'    => true,
             ),
             'description' => array(

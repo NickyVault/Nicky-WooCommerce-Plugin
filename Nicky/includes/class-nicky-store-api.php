@@ -53,7 +53,7 @@ class Nicky_Store_API_Integration {
     public function update_order_from_request($order, $request) {
         if (isset($request['payment_method']) && $request['payment_method'] === 'nicky') {
             $order->set_payment_method('nicky');
-            $order->set_payment_method_title('Nicky.me Payment');
+            $order->set_payment_method_title('Nicky Payment');
         }
         return $order;
     }

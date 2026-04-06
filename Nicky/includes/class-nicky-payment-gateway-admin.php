@@ -30,8 +30,8 @@ class Nicky_Payment_Gateway_Admin {
     public function add_admin_menu() {
         add_submenu_page(
             'woocommerce',
-            'Nicky.me',
-            'Nicky.me Payments',
+            'Nicky',
+            'Nicky Payments',
             'manage_woocommerce',
             'nicky-me',
             array($this, 'admin_page')

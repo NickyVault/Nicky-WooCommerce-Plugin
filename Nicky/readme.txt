@@ -1,9 +1,9 @@
-=== Nicky.me ===
+=== Nicky ===
 Contributors: NickyVault
 Tags: woocommerce, payment gateway, cryptocurrency, bitcoin, ethereum
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.11
+Stable tag: 1.12
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -91,6 +91,9 @@ The plugin stores minimal transaction data locally (order ID, transaction ID, pa
 Yes, you can configure test mode settings in the gateway configuration. Contact Nicky.me support for test API credentials.
 
 == Changelog ==
+
+= 1.12 =
+* Renamed plugin to "Nicky" and updated author to "Nicky, LLC"
 
 = 1.11 =
 * Added custom plugin icon for WordPress.org Plugin Directory

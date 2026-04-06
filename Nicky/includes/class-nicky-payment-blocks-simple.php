@@ -49,7 +49,7 @@ class Nicky_Payment_Simple_Blocks {
         
         // Localize script with gateway data
         wp_localize_script('nicky-blocks-integration', 'nickyBlocksData', [
-            'title' => $settings['title'] ?? 'Nicky.me Payment',
+            'title' => $settings['title'] ?? 'Nicky Payment',
             'description' => $settings['description'] ?? 'Pay securely with cryptocurrency via Nicky.me. You will be redirected to complete your payment.',
             'icon' => plugins_url('assets/images/logo.png', dirname(__FILE__)),
             'enabled' => ($settings['enabled'] ?? 'no') === 'yes',
