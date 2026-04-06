@@ -3,7 +3,7 @@
  * Plugin Name: Nicky
  * Plugin URI: https://wordpress.org/plugins/nicky-me
  * Description: Secure and reliable payment processing for WooCommerce powered by Nicky.
- * Version: 1.14
+ * Version: 1.15
  * Author: Nicky, LLC
  * Author URI: https://nicky.me
  * License: GPL v2 or later
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('NICKY_PAYMENT_GATEWAY_VERSION', '1.14');
+define('NICKY_PAYMENT_GATEWAY_VERSION', '1.15');
 define('NICKY_PAYMENT_GATEWAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('NICKY_PAYMENT_GATEWAY_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
