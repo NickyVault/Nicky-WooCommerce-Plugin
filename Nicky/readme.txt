@@ -3,7 +3,7 @@ Contributors: NickyVault
 Tags: woocommerce, payment gateway, cryptocurrency, bitcoin, ethereum
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.12
+Stable tag: 1.13
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -12,17 +12,17 @@ Secure cryptocurrency payment gateway for WooCommerce. Accept Bitcoin, Ethereum,
 
 == Description ==
 
-Nicky.me is a secure and reliable cryptocurrency payment gateway for your WooCommerce store. Accept payments in Bitcoin, Ethereum, USDT and other popular cryptocurrencies with ease.
+Nicky is a secure and reliable cryptocurrency payment gateway for your WooCommerce store. Accept payments in Bitcoin, Ethereum, USDT and other popular cryptocurrencies with ease.
 
 = External Service Usage =
 
-This plugin connects to the Nicky.me payment processing service (https://nicky.me) to process cryptocurrency payments. When a customer makes a purchase:
+This plugin connects to the Nicky payment processing service (https://nicky.me) to process cryptocurrency payments. When a customer makes a purchase:
 
 * Order data (amount, currency, order ID) is sent to https://api-public.pay.nicky.me
-* Payment status updates are received via webhook from Nicky.me servers
-* Customer payment information is processed through Nicky.me's secure payment interface
+* Payment status updates are received via webhook from Nicky servers
+* Customer payment information is processed through Nicky's secure payment interface
 
-By using this plugin, you agree to Nicky.me's Terms of Service and Privacy Policy:
+By using this plugin, you agree to Nicky's Terms of Service and Privacy Policy:
 * Terms of Service: https://nicky.me/terms
 * Privacy Policy: https://nicky.me/privacy
 
@@ -30,7 +30,7 @@ By using this plugin, you agree to Nicky.me's Terms of Service and Privacy Polic
 
 The plugin stores transaction data locally including:
 * Order ID and payment status
-* Transaction ID from Nicky.me
+* Transaction ID from Nicky
 * Payment amounts and currency
 
 No sensitive customer payment information (wallet addresses, private keys) is stored in your WordPress database.
@@ -38,7 +38,7 @@ No sensitive customer payment information (wallet addresses, private keys) is st
 **Features:**
 
 * Accept multiple cryptocurrencies (Bitcoin, Ethereum, USDT, and more)
-* Secure payment processing powered by Nicky.me
+* Secure payment processing powered by Nicky
 * Real-time payment status updates via webhook
 * Automatic currency conversion
 * Easy setup and configuration
@@ -53,8 +53,8 @@ This plugin is distributed with complete, human-readable source code (PHP, JavaS
 
 1. Upload the plugin files to the `/wp-content/plugins/nicky-me` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Go to WooCommerce > Settings > Payments and configure the Nicky.me Payment Gateway.
-4. Enter your API key from your Nicky.me account (create an account at https://nicky.me if you don't have one).
+3. Go to WooCommerce > Settings > Payments and configure the Nicky Payment Gateway.
+4. Enter your API key from your Nicky account (create an account at https://nicky.me if you don't have one).
 5. Select your preferred settlement currency from the available blockchain assets.
 6. Save your settings and start accepting cryptocurrency payments!
 
@@ -62,17 +62,17 @@ This plugin is distributed with complete, human-readable source code (PHP, JavaS
 * WordPress 5.0 or higher
 * WooCommerce 5.0 or higher
 * PHP 7.4 or higher
-* A Nicky.me account with API access
+* A Nicky account with API access
 
 == Frequently Asked Questions ==
 
-= Do I need a Nicky.me account? =
+= Do I need a Nicky account? =
 
 Yes, you need to create an account at https://nicky.me to get your API credentials.
 
 = Which cryptocurrencies are supported? =
 
-The plugin supports Bitcoin, Ethereum, USDT and other cryptocurrencies available in your Nicky.me account.
+The plugin supports Bitcoin, Ethereum, USDT and other cryptocurrencies available in your Nicky account.
 
 = Is the plugin compatible with WooCommerce Blocks? =
 
@@ -80,17 +80,21 @@ Yes, the plugin is fully compatible with the new WooCommerce Blocks checkout.
 
 = What data does the plugin send to external services? =
 
-The plugin sends order information (amount, currency, order ID) to Nicky.me API for payment processing. No sensitive customer data like passwords or full credit card numbers are transmitted or stored by the plugin. See the "External Service Usage" section for more details.
+The plugin sends order information (amount, currency, order ID) to Nicky API for payment processing. No sensitive customer data like passwords or full credit card numbers are transmitted or stored by the plugin. See the "External Service Usage" section for more details.
 
 = Is the plugin GDPR compliant? =
 
-The plugin stores minimal transaction data locally (order ID, transaction ID, payment status, amounts). Ensure your site's privacy policy mentions the use of Nicky.me for payment processing.
+The plugin stores minimal transaction data locally (order ID, transaction ID, payment status, amounts). Ensure your site's privacy policy mentions the use of Nicky for payment processing.
 
 = Can I use this plugin in test mode? =
 
-Yes, you can configure test mode settings in the gateway configuration. Contact Nicky.me support for test API credentials.
+Yes, you can configure test mode settings in the gateway configuration. Contact Nicky support for test API credentials.
 
 == Changelog ==
+
+= 1.13 =
+* Updated all references from "Nicky.me" to "Nicky" throughout the plugin
+* Updated menu label from "Nicky Payments" to "Nciky"
 
 = 1.12 =
 * Renamed plugin to "Nicky" and updated author to "Nicky, LLC"
@@ -147,7 +151,7 @@ Fixes for WordPress.org review: PHP syntax, plugin headers, and packaging filena
 Maintenance release: guideline-aligned dashboard widget controls, documentation, and settings link fixes.
 
 = 1.0.0 =
-Initial release of Nicky.me payment gateway for WooCommerce.
+Initial release of Nicky payment gateway for WooCommerce.
 
 == License ==
 

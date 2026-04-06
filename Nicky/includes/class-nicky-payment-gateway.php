@@ -10,7 +10,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         $this->icon               = $this->get_gateway_icon();
         $this->has_fields         = true;
         $this->method_title       = 'Nicky';
-        $this->method_description = 'Accept payments using Nicky.me - secure, fast and reliable payment processing';
+        $this->method_description = 'Accept payments using Nicky - secure, fast and reliable payment processing';
         $this->supports           = array(
             'products',
             'subscriptions',
@@ -23,7 +23,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         $this->init_settings();
 
         $this->title                = $this->get_option('title', 'Nicky Payment');
-        $this->description          = $this->get_option('description', 'Pay securely with crypto via Nicky.me.');
+        $this->description          = $this->get_option('description', 'Pay securely with crypto via Nicky.');
         $this->enabled              = $this->get_option('enabled', 'no');
         
         $this->api_base_url         = $this->get_option('api_base_url', 'https://api-public.pay.nicky.me');
@@ -165,7 +165,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         if (is_wp_error($response)) {
             add_action('admin_notices', function() use ($response) {
                 echo '<div class="notice notice-warning is-dismissible">';
-                echo '<p><strong>Nicky.me:</strong> Webhook creation failed: ' . esc_html($response->get_error_message()) . '</p>';
+                echo '<p><strong>Nicky:</strong> Webhook creation failed: ' . esc_html($response->get_error_message()) . '</p>';
                 echo '</div>';
             });
             return false;
@@ -177,7 +177,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             
             add_action('admin_notices', function() use ($webhook_id) {
                 echo '<div class="notice notice-success is-dismissible">';
-                echo '<p><strong>Nicky.me:</strong> Payment status webhook created successfully (ID: ' . esc_html($webhook_id) . ')</p>';
+                echo '<p><strong>Nicky:</strong> Payment status webhook created successfully (ID: ' . esc_html($webhook_id) . ')</p>';
                 echo '</div>';
             });
             
@@ -234,7 +234,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         
         add_action('admin_notices', function() {
             echo '<div class="notice notice-info is-dismissible">';
-            echo '<p><strong>Nicky.me:</strong> Payment status webhook was deleted.</p>';
+            echo '<p><strong>Nicky:</strong> Payment status webhook was deleted.</p>';
             echo '</div>';
         });
         
@@ -327,13 +327,13 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 'title'       => 'Description',
                 'type'        => 'textarea',
                 'description' => 'Payment method description that the customer will see on your checkout.',
-                'default'     => 'Pay securely with crypto via Nicky.me.',
+                'default'     => 'Pay securely with crypto via Nicky.',
                 'desc_tip'    => true,
             ),
             'api_base_url' => array(
                 'title'       => 'API Base URL',
                 'type'        => 'text',
-                'description' => 'Base URL for Nicky.me API.',
+                'description' => 'Base URL for Nicky API.',
                 'default'     => 'https://api-public.pay.nicky.me',
                 'desc_tip'    => false,
                 'custom_attributes' => array(
@@ -344,7 +344,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             'api_key' => array(
                 'title'       => 'API Key (x-api-key)',
                 'type'        => 'text',
-                'description' => 'Your Nicky.me API key. Sent in header x-api-key.',
+                'description' => 'Your Nicky API key. Sent in header x-api-key.',
                 'default'     => '',
                 'desc_tip'    => true,
             ),
@@ -409,7 +409,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return array(
                 'title'       => 'Settlement Currency / blockchainAssetId',
                 'type'        => 'select',
-                'description' => 'Select the blockchain asset for settlements. Assets are loaded from your Nicky.me account.',
+                'description' => 'Select the blockchain asset for settlements. Assets are loaded from your Nicky account.',
                 'default'     => '',
                 'desc_tip'    => true,
                 'options'     => $this->get_blockchain_asset_options(),
@@ -564,7 +564,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
         echo '<div class="nicky-payment-info" style="margin-top: 15px; padding: 10px; background: #f0f8ff; border-left: 4px solid #0073aa; border-radius: 4px;">';
         echo '<p class="nicky-info-text" style="margin: 0; font-size: 14px;">';
-        echo '🔒 ' . esc_html(__('You will be redirected to Nicky.me to complete your payment securely.', 'nicky-me'));
+        echo '🔒 ' . esc_html(__('You will be redirected to Nicky to complete your payment securely.', 'nicky-me'));
         echo '</p>';
         echo '</div>';
         
@@ -908,7 +908,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
     }
 
     public function webhook_handler() {
-        // Whitelist: only accept webhooks from Nicky.me server IP
+        // Whitelist: only accept webhooks from Nicky server IP
         $allowed_ip = '20.76.240.81';
         $remote_ip  = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
         if ($remote_ip !== $allowed_ip) {
@@ -940,7 +940,7 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
 
         if (empty($data)) {
-            $data = array_map('sanitize_text_field', $_GET + $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- Webhook from external service (Nicky.me API), no nonce verification needed
+            $data = array_map('sanitize_text_field', $_GET + $_POST); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.NonceVerification.Missing -- Webhook from external service (Nicky API), no nonce verification needed
         }
 
         if (defined('WP_DEBUG') && WP_DEBUG) {

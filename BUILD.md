@@ -1,4 +1,4 @@
-# Build Instructions for Nicky.me WooCommerce Plugin
+# Build Instructions for Nicky WooCommerce Plugin
 
 ## Overview
 

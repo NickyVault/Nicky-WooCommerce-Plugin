@@ -2,7 +2,7 @@
 
 This README is intended for shop owners who want to install, configure, and operate the Nicky WooCommerce payment plugin.
 
-In short: the plugin adds a Nicky.me crypto gateway to WooCommerce. It supports test and live modes, webhook handling, and transaction overview in the admin area.
+In short: the plugin adds a Nicky crypto gateway to WooCommerce. It supports test and live modes, webhook handling, and transaction overview in the admin area.
 
 ## For Developers
 

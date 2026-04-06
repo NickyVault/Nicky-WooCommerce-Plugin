@@ -1,4 +1,4 @@
-# Release Process for Nicky.me WooCommerce Plugin
+# Release Process for Nicky WooCommerce Plugin
 
 Quick reference guide for releasing new versions.
 

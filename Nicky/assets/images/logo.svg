@@ -9,7 +9,7 @@
   <rect x="14" y="13" width="6" height="1" fill="#0073aa"/>
   
   <!-- Text -->
-  <text x="28" y="15" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="white">Nicky.me</text>
+  <text x="28" y="15" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="white">Nicky</text>
   
   <!-- Security badge -->
   <circle cx="105" cy="12" r="8" fill="white" fill-opacity="0.2"/>

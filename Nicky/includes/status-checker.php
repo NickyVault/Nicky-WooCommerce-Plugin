@@ -51,7 +51,7 @@ function nicky_payment_gateway_status_check() {
         if (isset($gateway_settings['enabled']) && $gateway_settings['enabled'] === 'yes') {
             $status['gateway_enabled'] = true;
         } else {
-            $status['warnings'][] = 'Nicky.me gateway is not enabled.';
+            $status['warnings'][] = 'Nicky gateway is not enabled.';
         }
 
         // Check API configuration
@@ -96,7 +96,7 @@ function nicky_payment_gateway_display_status() {
     echo '<li class="' . ($status['plugin_active'] ? 'success' : 'error') . '">Plugin activated: ' . ($status['plugin_active'] ? '✅' : '❌') . '</li>';
     echo '<li class="' . ($status['woocommerce_active'] ? 'success' : 'error') . '">WooCommerce activated: ' . ($status['woocommerce_active'] ? '✅' : '❌') . '</li>';
     echo '<li class="' . ($status['database_created'] ? 'success' : 'warning') . '">Database created: ' . ($status['database_created'] ? '✅' : '⚠️') . '</li>';
-    echo '<li class="' . ($status['gateway_enabled'] ? 'success' : 'warning') . '">Nicky.me enabled: ' . ($status['gateway_enabled'] ? '✅' : '⚠️') . '</li>';
+    echo '<li class="' . ($status['gateway_enabled'] ? 'success' : 'warning') . '">Nicky enabled: ' . ($status['gateway_enabled'] ? '✅' : '⚠️') . '</li>';
     echo '<li class="' . ($status['api_configured'] ? 'success' : 'warning') . '">API configured: ' . ($status['api_configured'] ? '✅' : '⚠️') . '</li>';
     echo '</ul>';
     
@@ -189,8 +189,8 @@ function nicky_payment_gateway_display_status() {
 add_action('admin_menu', function() {
     add_submenu_page(
         'tools.php',
-        'Nicky.me Status',
-        'Nicky.me Status',
+        'Nicky Status',
+        'Nicky Status',
         'manage_options',
         'nicky-payment-status',
         'nicky_payment_gateway_display_status'
@@ -203,7 +203,7 @@ add_action('admin_notices', function() {
     
     if (!empty($status['errors'])) {
         echo '<div class="notice notice-error is-dismissible">';
-        echo '<p><strong>Nicky.me:</strong> There are critical errors that need to be fixed.</p>';
+        echo '<p><strong>Nicky:</strong> There are critical errors that need to be fixed.</p>';
         echo '<p><a href="' . esc_url(admin_url('tools.php?page=nicky-payment-status')) . '">Check Status</a></p>';
         echo '</div>';
     }

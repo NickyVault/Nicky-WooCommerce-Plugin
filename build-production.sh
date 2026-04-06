@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###############################################################################
-# Nicky.me WooCommerce Plugin - Production Build Script
+# Nicky WooCommerce Plugin - Production Build Script
 #
 # This script creates a clean, production-ready ZIP file of the plugin
 # by excluding all development and debug files, and optionally updates
@@ -31,7 +31,7 @@ MAIN_FILE="$PLUGIN_DIR/nicky-me.php"
 README_FILE="$PLUGIN_DIR/readme.txt"
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}Nicky.me Plugin - Production Build${NC}"
+echo -e "${BLUE}Nicky Plugin - Production Build${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 

@@ -31,7 +31,7 @@ class Nicky_Payment_Gateway_Admin {
         add_submenu_page(
             'woocommerce',
             'Nicky',
-            'Nicky Payments',
+            'Nciky',
             'manage_woocommerce',
             'nicky-me',
             array($this, 'admin_page')
@@ -98,7 +98,7 @@ class Nicky_Payment_Gateway_Admin {
                     <h2>Settings</h2>
                     <p>
                         <a href="<?php echo esc_url(admin_url('admin.php?page=wc-settings&tab=checkout&section=nicky')); ?>" class="button button-primary">
-                            Configure Nicky.me
+                            Configure Nicky
                         </a>
                     </p>
                 </div>

@@ -43,7 +43,7 @@ function nicky_add_payment_gateway_safe($gateways) {
  * Admin notice if WooCommerce is not active
  */
 function nicky_payment_gateway_wc_missing_notice() {
-    echo '<div class="error"><p><strong>Nicky.me</strong> requires WooCommerce to be installed and active.</p></div>';
+    echo '<div class="error"><p><strong>Nicky</strong> requires WooCommerce to be installed and active.</p></div>';
 }
 
 // Initialize in safe mode
@@ -56,8 +56,8 @@ function nicky_payment_gateway_safe_activate() {
     // Enable the gateway by default
     $default_settings = array(
         'enabled' => 'yes',
-        'title' => 'Nicky.me Payment',
-        'description' => 'Pay securely with crypto via Nicky.me.',
+        'title' => 'Nicky Payment',
+        'description' => 'Pay securely with crypto via Nicky.',
         'testmode' => 'yes'
     );
     

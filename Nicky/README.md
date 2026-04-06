@@ -1,6 +1,6 @@
-# Nicky.me
+# Nicky
 
-A complete WooCommerce payment plugin for secure online payments powered by Nicky.me.
+A complete WooCommerce payment plugin for secure online payments powered by Nicky.
 
 ## Installation
 
@@ -11,12 +11,12 @@ A complete WooCommerce payment plugin for secure online payments powered by Nick
 
 2. **Activate plugin:**
    - Go to WordPress Admin → Plugins
-   - Find "Nicky.me"
+   - Find "Nicky"
    - Click "Activate"
 
 3. **Configuration:**
    - Go to WooCommerce → Settings → Payments
-   - Find "Nicky.me"
+   - Find "Nicky"
    - Click "Manage"
    - Configure your API keys
 
@@ -25,7 +25,7 @@ A complete WooCommerce payment plugin for secure online payments powered by Nick
 ### Basic Settings
 
 1. **Enable gateway:**
-   - Check "Enable Nicky.me"
+   - Check "Enable Nicky"
 
 2. **Title and description:**
    - Customize title and description for your needs
@@ -44,12 +44,12 @@ The plugin automatically creates a database table for transactions:
 ### For Customers
 
 1. **Checkout process:**
-   - Select "Nicky.me Payment" as payment method
+   - Select "Nicky Payment" as payment method
 
 ### For Administrators
 
 1. **Dashboard:**
-   - Go to WooCommerce → Nicky.me Payments
+   - Go to WooCommerce → Nciky
    - Overview of gateway status
    - Recent transactions
    - Payment statistics

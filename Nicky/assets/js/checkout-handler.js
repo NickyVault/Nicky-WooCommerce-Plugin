@@ -98,7 +98,7 @@ jQuery(document).ready(function($) {
                 '</div>' +
                 '<div class="step">' +
                 '<span class="step-number">2</span>' +
-                '<span class="step-text">' + this.getTranslation('redirect_to_nicky', 'Redirect to Nicky.me') + '</span>' +
+                '<span class="step-text">' + this.getTranslation('redirect_to_nicky', 'Redirect to Nicky') + '</span>' +
                 '</div>' +
                 '<div class="step">' +
                 '<span class="step-number">3</span>' +

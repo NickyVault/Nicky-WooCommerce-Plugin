@@ -1,5 +1,5 @@
 /**
- * Simple WooCommerce Blocks Integration for Nicky.me Payment Gateway
+ * Simple WooCommerce Blocks Integration for Nicky Payment Gateway
  * Compatible with WooCommerce 5.0+
  */
 
@@ -24,14 +24,14 @@
         
         // Get settings from localized data or fallback
         const settings = window.nickyBlocksData || {
-            title: 'Nicky.me Payment',
-            description: 'Pay securely with Nicky.me',
+            title: 'Nicky Payment',
+            description: 'Pay securely with Nicky',
             icon: '',
             enabled: true
         };
         
         if (!settings.enabled) {
-            console.log('Nicky.me payment gateway is disabled');
+            console.log('Nicky payment gateway is disabled');
             return; // Don't register if gateway is disabled
         }
         
@@ -42,26 +42,26 @@
                 { style: { display: 'flex', alignItems: 'center' } },
                 settings.icon && createElement('img', {
                     src: settings.icon,
-                    alt: 'Nicky.me',
+                    alt: 'Nicky',
                     style: { height: '20px', marginRight: '8px', maxWidth: '120px' }
                 }),
-                createElement('span', {}, settings.title || 'Nicky.me Payment')
+                createElement('span', {}, settings.title || 'Nicky Payment')
             ),
             content: createElement(
                 'div',
                 { className: 'nicky-payment-content' },
-                createElement('p', {}, settings.description || 'Pay securely with cryptocurrency via Nicky.me')
+                createElement('p', {}, settings.description || 'Pay securely with cryptocurrency via Nicky')
             ),
             edit: createElement(
                 'div',
                 { className: 'nicky-payment-content' },
-                createElement('p', {}, settings.description || 'Pay securely with cryptocurrency via Nicky.me')
+                createElement('p', {}, settings.description || 'Pay securely with cryptocurrency via Nicky')
             ),
             canMakePayment: () => {
                 // Basic validation
                 return true;
             },
-            ariaLabel: settings.title || 'Nicky.me Payment',
+            ariaLabel: settings.title || 'Nicky Payment',
             supports: {
                 features: ['products']
             }
@@ -69,9 +69,9 @@
         
         try {
             registerPaymentMethod(NickyPaymentMethod);
-            console.log('Nicky.me payment method registered successfully');
+            console.log('Nicky payment method registered successfully');
         } catch (error) {
-            console.error('Failed to register Nicky.me payment method:', error);
+            console.error('Failed to register Nicky payment method:', error);
         }
     };
     

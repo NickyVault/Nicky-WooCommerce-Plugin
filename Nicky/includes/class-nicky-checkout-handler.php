@@ -56,7 +56,7 @@ class Nicky_Checkout_Handler {
                 'currency_symbol' => get_woocommerce_currency_symbol(),
                 'i18n' => array(
                     'processing' => __('Processing your payment...', 'nicky-me'),
-                    'redirecting' => __('Redirecting to Nicky.me...', 'nicky-me'),
+                    'redirecting' => __('Redirecting to Nicky...', 'nicky-me'),
                     'please_wait' => __('Please wait while we prepare your payment.', 'nicky-me'),
                     'error_occurred' => __('An error occurred. Please try again.', 'nicky-me'),
                 )
@@ -138,14 +138,14 @@ class Nicky_Checkout_Handler {
         $gateways = WC()->payment_gateways()->payment_gateways();
         
         if (!isset($gateways['nicky'])) {
-            wc_add_notice(__('Nicky.me payment method is not available.', 'nicky-me'), 'error');
+            wc_add_notice(__('Nicky payment method is not available.', 'nicky-me'), 'error');
             return;
         }
         
         $gateway = $gateways['nicky'];
         
         if (!$gateway->is_available()) {
-            wc_add_notice(__('Nicky.me payment method is currently unavailable.', 'nicky-me'), 'error');
+            wc_add_notice(__('Nicky payment method is currently unavailable.', 'nicky-me'), 'error');
             return;
         }
 
@@ -173,8 +173,8 @@ class Nicky_Checkout_Handler {
         // Log the payment initiation
         $gateway = WC()->payment_gateways()->payment_gateways()['nicky'];
         $order->add_order_note(sprintf(
-            /* translators: %s: URL to Nicky.me */
-            __('Nicky.me payment initiated. Customer will be redirected to %s', 'nicky-me'),
+            /* translators: %s: URL to Nicky */
+            __('Nicky payment initiated. Customer will be redirected to %s', 'nicky-me'),
             'https://pay.nicky.me'
         ));
     }
@@ -237,14 +237,14 @@ class Nicky_Checkout_Handler {
      */
     private function send_payment_completion($order) {
         // WooCommerce will handle the standard completion email
-        $order->add_order_note(__('Nicky.me payment completed successfully.', 'nicky-me'));
+        $order->add_order_note(__('Nicky payment completed successfully.', 'nicky-me'));
     }
 
     /**
      * Handle payment cancellation
      */
     private function handle_payment_cancellation($order) {
-        $order->add_order_note(__('Nicky.me payment was cancelled by customer.', 'nicky-me'));
+        $order->add_order_note(__('Nicky payment was cancelled by customer.', 'nicky-me'));
         
         // Optionally send cancellation email
         $this->send_cancellation_email($order);
@@ -254,7 +254,7 @@ class Nicky_Checkout_Handler {
      * Handle payment failure
      */
     private function handle_payment_failure($order) {
-        $order->add_order_note(__('Nicky.me payment failed.', 'nicky-me'));
+        $order->add_order_note(__('Nicky payment failed.', 'nicky-me'));
         
         // Optionally send failure email with retry instructions
         $this->send_failure_email($order);
@@ -355,7 +355,7 @@ class Nicky_Checkout_Handler {
             <?php if ($short_id): ?>
                 <p><strong><?php esc_html_e('Payment ID:', 'nicky-me'); ?></strong> <?php echo esc_html($short_id); ?></p>
                 <p><a href="https://pay.nicky.me/home?paymentId=<?php echo urlencode($short_id); ?>" target="_blank" class="button">
-                    <?php esc_html_e('Check Payment on Nicky.me', 'nicky-me'); ?>
+                    <?php esc_html_e('Check Payment on Nicky', 'nicky-me'); ?>
                 </a></p>
             <?php endif; ?>
             

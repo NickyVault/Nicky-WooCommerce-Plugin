@@ -17,7 +17,7 @@ function nicky_debug_gateway_status() {
     }
     
     echo '<div class="notice notice-info">';
-    echo '<h3>Nicky.me Debug Information</h3>';
+    echo '<h3>Nicky Debug Information</h3>';
     
     // Check if WooCommerce is active
     if (class_exists('WooCommerce')) {
@@ -47,12 +47,12 @@ function nicky_debug_gateway_status() {
     echo '<p>Available payment gateways: ' . count($available_gateways) . '</p>';
     
     if (isset($available_gateways['nicky'])) {
-        echo '<p>✅ Nicky.me gateway is available</p>';
+        echo '<p>✅ Nicky gateway is available</p>';
         $gateway = $available_gateways['nicky'];
         echo '<p>Gateway enabled: ' . ($gateway->enabled === 'yes' ? 'Yes' : 'No') . '</p>';
         echo '<p>Gateway title: ' . esc_html($gateway->title) . '</p>';
     } else {
-        echo '<p>❌ Nicky.me gateway is NOT available</p>';
+        echo '<p>❌ Nicky gateway is NOT available</p>';
         
         // Check all registered gateways
         $all_gateways = WC()->payment_gateways->payment_gateways();
@@ -82,13 +82,13 @@ if (defined('WP_DEBUG') && WP_DEBUG) {
 add_action('admin_menu', function() {
     add_submenu_page(
         'tools.php',
-        'Nicky.me Debug',
-        'Nicky.me Debug',
+        'Nicky Debug',
+        'Nicky Debug',
         'manage_options',
         'nicky-debug',
         function() {
             echo '<div class="wrap">';
-            echo '<h1>Nicky.me Debug Information</h1>';
+            echo '<h1>Nicky Debug Information</h1>';
             nicky_debug_gateway_status();
             echo '</div>';
         }

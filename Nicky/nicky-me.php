@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Nicky
  * Plugin URI: https://github.com/NickyVault/Nicky-WooCommerce-Plugin
- * Description: Secure and reliable payment processing for WooCommerce powered by Nicky.me.
- * Version: 1.12
+ * Description: Secure and reliable payment processing for WooCommerce powered by Nicky.
+ * Version: 1.13
  * Author: Nicky, LLC
  * Author URI: https://nicky.me
  * License: GPL v2 or later
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('NICKY_PAYMENT_GATEWAY_VERSION', '1.12');
+define('NICKY_PAYMENT_GATEWAY_VERSION', '1.13');
 define('NICKY_PAYMENT_GATEWAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('NICKY_PAYMENT_GATEWAY_PLUGIN_PATH', plugin_dir_path(__FILE__));
 
@@ -217,7 +217,7 @@ function nicky_payment_gateway_activate() {
         $default_settings = array(
             'enabled' => 'yes',
             'title' => 'Nicky Payment',
-            'description' => 'Pay securely with crypto via Nicky.me.',
+            'description' => 'Pay securely with crypto via Nicky.',
             'api_key' => '',
             'api_secret' => '',
             'custom_logo' => ''

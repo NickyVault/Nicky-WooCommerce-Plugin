@@ -16,8 +16,8 @@ add_action('admin_enqueue_scripts', 'nicky_debug_enqueue_scripts');
 function nicky_debug_menu() {
     add_submenu_page(
         'woocommerce',
-        'Nicky.me Debug',
-        'Nicky.me Debug',
+        'Nicky Debug',
+        'Nicky Debug',
         'manage_woocommerce',
         'nicky-debug',
         'nicky_debug_page'
@@ -47,7 +47,7 @@ function nicky_debug_page() {
     }
 
     echo '<div class="wrap">';
-    echo '<h1>Nicky.me Payment Gateway - Debug</h1>';
+    echo '<h1>Nicky Payment Gateway - Debug</h1>';
     
     echo '<div class="nicky-debug">';
 
@@ -161,10 +161,10 @@ function nicky_debug_page() {
         $settings = get_option('woocommerce_nicky_settings', array());
         $settings['enabled'] = 'yes';
         if (empty($settings['title'])) {
-            $settings['title'] = 'Nicky.me Payment';
+            $settings['title'] = 'Nicky Payment';
         }
         if (empty($settings['description'])) {
-            $settings['description'] = 'Pay securely with crypto via Nicky.me.';
+            $settings['description'] = 'Pay securely with crypto via Nicky.';
         }
         update_option('woocommerce_nicky_settings', $settings);
         echo '<div class="notice notice-success"><p>Gateway has been activated and set to test mode!</p></div>';
@@ -179,7 +179,7 @@ function nicky_debug_page() {
     
     echo '<p><strong>Manual steps:</strong></p>';
     echo '<ol>';
-    echo '<li>Go to <a href="' . esc_url(admin_url('admin.php?page=wc-settings&tab=checkout&section=nicky')) . '">WooCommerce > Settings > Payments > Nicky.me</a></li>';
+    echo '<li>Go to <a href="' . esc_url(admin_url('admin.php?page=wc-settings&tab=checkout&section=nicky')) . '">WooCommerce > Settings > Payments > Nicky</a></li>';
     echo '<li>Activate the gateway</li>';
     echo '<li>Set it to test mode for initial tests</li>';
     echo '<li>Add items to cart and test the checkout</li>';
