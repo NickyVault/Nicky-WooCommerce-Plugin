@@ -92,6 +92,10 @@ Yes, you can configure test mode settings in the gateway configuration. Contact 
 
 == Changelog ==
 
+= 1.16 =
+* Added translations for Russian (ru_RU), Brazilian Portuguese (pt_BR), and Portuguese (pt_PT)
+* Updated Plugin URI to https://wordpress.org/plugins/nicky
+
 = 1.15 =
 * Fixed banner images to use original Nicky logo
 

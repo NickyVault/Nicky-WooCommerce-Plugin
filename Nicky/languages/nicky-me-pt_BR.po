@@ -1,0 +1,204 @@
+# Translation of Nicky Payment Gateway - Brazilian Portuguese
+# Copyright (C) 2026 Nicky, LLC
+# This file is distributed under the same license as the Nicky plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Nicky 1.16\n"
+"POT-Creation-Date: 2026-04-06\n"
+"PO-Revision-Date: 2026-04-06\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Claude\n"
+"X-Domain: nicky-me\n"
+
+msgid "Add your logo.png to assets/images/ or configure a custom logo URL."
+msgstr "Adicione seu logo.png em assets/images/ ou configure uma URL de logotipo personalizada."
+
+msgid "Address copied to clipboard!"
+msgstr "Endereço copiado para a área de transferência!"
+
+msgid "Address:"
+msgstr "Endereço:"
+
+msgid "Amount"
+msgstr "Valor"
+
+msgid "An error occurred. Please try again."
+msgstr "Ocorreu um erro. Por favor, tente novamente."
+
+msgid "Asset:"
+msgstr "Ativo:"
+
+msgid "Check Payment Status"
+msgstr "Verificar status do pagamento"
+
+msgid "Check Payment on Nicky"
+msgstr "Verificar pagamento no Nicky"
+
+msgid "Continue to Payment"
+msgstr "Continuar para o pagamento"
+
+msgid "Copy Address"
+msgstr "Copiar endereço"
+
+msgid "Date"
+msgstr "Data"
+
+msgid "Deposit Address"
+msgstr "Endereço de depósito"
+
+msgid "Description"
+msgstr "Descrição"
+
+msgid "Display Settings"
+msgstr "Configurações de exibição"
+
+msgid "Gateway Logo"
+msgstr "Logotipo do gateway"
+
+msgid "Hide this widget"
+msgstr "Ocultar este widget"
+
+msgid "Invalid order ID."
+msgstr "ID do pedido inválido."
+
+msgid "Nicky payment completed successfully."
+msgstr "Pagamento Nicky concluído com sucesso."
+
+msgid "Nicky payment failed."
+msgstr "Pagamento Nicky falhou."
+
+msgid "Nicky payment initiated. Customer will be redirected to %s"
+msgstr "Pagamento Nicky iniciado. O cliente será redirecionado para %s"
+
+msgid "Nicky payment method is currently unavailable."
+msgstr "O método de pagamento Nicky está temporariamente indisponível."
+
+msgid "Nicky payment method is not available."
+msgstr "O método de pagamento Nicky não está disponível."
+
+msgid "Nicky payment was cancelled by customer."
+msgstr "Pagamento Nicky cancelado pelo cliente."
+
+msgid "No logo configured"
+msgstr "Nenhum logotipo configurado"
+
+msgid "No transactions found."
+msgstr "Nenhuma transação encontrada."
+
+msgid "Order ID"
+msgstr "Número do pedido"
+
+msgid "Order not found or not a Nicky payment."
+msgstr "Pedido não encontrado ou não é um pagamento Nicky."
+
+msgid "Order:"
+msgstr "Pedido:"
+
+msgid "Payment Cancelled"
+msgstr "Pagamento cancelado"
+
+msgid "Payment Cancelled - Order #%s"
+msgstr "Pagamento cancelado — Pedido #%s"
+
+msgid "Payment Complete"
+msgstr "Pagamento concluído"
+
+msgid "Payment Confirmed"
+msgstr "Pagamento confirmado"
+
+msgid "Payment Confirmed - Order #%s"
+msgstr "Pagamento confirmado — Pedido #%s"
+
+msgid "Payment Failed"
+msgstr "Pagamento falhou"
+
+msgid "Payment Failed - Order #%s"
+msgstr "Pagamento falhou — Pedido #%s"
+
+msgid "Payment ID:"
+msgstr "ID do pagamento:"
+
+msgid "Payment Instructions"
+msgstr "Instruções de pagamento"
+
+msgid "Payment Instructions:"
+msgstr "Instruções de pagamento:"
+
+msgid "Payment Pending"
+msgstr "Pagamento pendente"
+
+msgid "Payment Status"
+msgstr "Status do pagamento"
+
+msgid "Payment method is not properly configured."
+msgstr "O método de pagamento não está configurado corretamente."
+
+msgid "Payment status is automatically updated via webhooks. Please refresh this page to see updates."
+msgstr "O status do pagamento é atualizado automaticamente via webhooks. Atualize esta página para ver as atualizações."
+
+msgid "Please wait while we prepare your payment."
+msgstr "Por favor, aguarde enquanto preparamos seu pagamento."
+
+msgid "Processing your payment..."
+msgstr "Processando seu pagamento..."
+
+msgid "Redirecting to Nicky..."
+msgstr "Redirecionando para o Nicky..."
+
+msgid "Show widget"
+msgstr "Mostrar widget"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Status:"
+msgstr "Status:"
+
+msgid "Supported: Bitcoin, Ethereum, USDT and more cryptocurrencies"
+msgstr "Suportados: Bitcoin, Ethereum, USDT e mais criptomoedas"
+
+msgid "Thank you! Your payment has been received and your order is being processed."
+msgstr "Obrigado! Seu pagamento foi recebido e seu pedido está sendo processado."
+
+msgid "The payment validation list is hidden for your account."
+msgstr "A lista de validação de pagamentos está oculta para sua conta."
+
+msgid "This logo will be displayed in the checkout."
+msgstr "Este logotipo será exibido no checkout."
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Transaction ID"
+msgstr "ID da transação"
+
+msgid "You can check the status at:"
+msgstr "Você pode verificar o status em:"
+
+msgid "You will be redirected to Nicky to complete your payment securely."
+msgstr "Você será redirecionado para o Nicky para concluir seu pagamento com segurança."
+
+msgid "Your cryptocurrency payment for order #%s has been confirmed and is being processed."
+msgstr "Seu pagamento em criptomoeda para o pedido #%s foi confirmado e está sendo processado."
+
+msgid "Your cryptocurrency payment is being processed - Order #%s"
+msgstr "Seu pagamento em criptomoeda está sendo processado — Pedido #%s"
+
+msgid "Your cryptocurrency payment is being processed."
+msgstr "Seu pagamento em criptomoeda está sendo processado."
+
+msgid "Your payment for order #%1$s failed. Please try again using this link: %2$s"
+msgstr "O pagamento do pedido #%1$s falhou. Tente novamente usando este link: %2$s"
+
+msgid "Your payment for order #%1$s was cancelled. You can retry your payment using this link: %2$s"
+msgstr "O pagamento do pedido #%1$s foi cancelado. Você pode repetir o pagamento usando este link: %2$s"
+
+msgid "Your payment is being processed. Please complete your payment to finalize your order."
+msgstr "Seu pagamento está sendo processado. Por favor, conclua o pagamento para finalizar seu pedido."
+
+msgid "Your payment is being processed. This page will update automatically."
+msgstr "Seu pagamento está sendo processado. Esta página será atualizada automaticamente."

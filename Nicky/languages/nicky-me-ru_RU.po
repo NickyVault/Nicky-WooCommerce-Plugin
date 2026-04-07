@@ -1,0 +1,204 @@
+# Translation of Nicky Payment Gateway - Russian
+# Copyright (C) 2026 Nicky, LLC
+# This file is distributed under the same license as the Nicky plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Nicky 1.16\n"
+"POT-Creation-Date: 2026-04-06\n"
+"PO-Revision-Date: 2026-04-06\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Claude\n"
+"X-Domain: nicky-me\n"
+
+msgid "Add your logo.png to assets/images/ or configure a custom logo URL."
+msgstr "Добавьте logo.png в assets/images/ или укажите пользовательский URL логотипа."
+
+msgid "Address copied to clipboard!"
+msgstr "Адрес скопирован в буфер обмена!"
+
+msgid "Address:"
+msgstr "Адрес:"
+
+msgid "Amount"
+msgstr "Сумма"
+
+msgid "An error occurred. Please try again."
+msgstr "Произошла ошибка. Пожалуйста, попробуйте снова."
+
+msgid "Asset:"
+msgstr "Актив:"
+
+msgid "Check Payment Status"
+msgstr "Проверить статус платежа"
+
+msgid "Check Payment on Nicky"
+msgstr "Проверить платёж в Nicky"
+
+msgid "Continue to Payment"
+msgstr "Перейти к оплате"
+
+msgid "Copy Address"
+msgstr "Скопировать адрес"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Deposit Address"
+msgstr "Адрес для депозита"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Display Settings"
+msgstr "Настройки отображения"
+
+msgid "Gateway Logo"
+msgstr "Логотип платёжного шлюза"
+
+msgid "Hide this widget"
+msgstr "Скрыть этот виджет"
+
+msgid "Invalid order ID."
+msgstr "Неверный идентификатор заказа."
+
+msgid "Nicky payment completed successfully."
+msgstr "Платёж Nicky успешно завершён."
+
+msgid "Nicky payment failed."
+msgstr "Платёж Nicky не выполнен."
+
+msgid "Nicky payment initiated. Customer will be redirected to %s"
+msgstr "Платёж Nicky инициирован. Покупатель будет перенаправлен на %s"
+
+msgid "Nicky payment method is currently unavailable."
+msgstr "Способ оплаты Nicky временно недоступен."
+
+msgid "Nicky payment method is not available."
+msgstr "Способ оплаты Nicky недоступен."
+
+msgid "Nicky payment was cancelled by customer."
+msgstr "Платёж Nicky отменён покупателем."
+
+msgid "No logo configured"
+msgstr "Логотип не настроен"
+
+msgid "No transactions found."
+msgstr "Транзакции не найдены."
+
+msgid "Order ID"
+msgstr "Номер заказа"
+
+msgid "Order not found or not a Nicky payment."
+msgstr "Заказ не найден или не является платежом Nicky."
+
+msgid "Order:"
+msgstr "Заказ:"
+
+msgid "Payment Cancelled"
+msgstr "Платёж отменён"
+
+msgid "Payment Cancelled - Order #%s"
+msgstr "Платёж отменён — Заказ №%s"
+
+msgid "Payment Complete"
+msgstr "Платёж завершён"
+
+msgid "Payment Confirmed"
+msgstr "Платёж подтверждён"
+
+msgid "Payment Confirmed - Order #%s"
+msgstr "Платёж подтверждён — Заказ №%s"
+
+msgid "Payment Failed"
+msgstr "Платёж не выполнен"
+
+msgid "Payment Failed - Order #%s"
+msgstr "Платёж не выполнен — Заказ №%s"
+
+msgid "Payment ID:"
+msgstr "Идентификатор платежа:"
+
+msgid "Payment Instructions"
+msgstr "Инструкции по оплате"
+
+msgid "Payment Instructions:"
+msgstr "Инструкции по оплате:"
+
+msgid "Payment Pending"
+msgstr "Платёж ожидает обработки"
+
+msgid "Payment Status"
+msgstr "Статус платежа"
+
+msgid "Payment method is not properly configured."
+msgstr "Способ оплаты настроен неверно."
+
+msgid "Payment status is automatically updated via webhooks. Please refresh this page to see updates."
+msgstr "Статус платежа обновляется автоматически через вебхуки. Обновите страницу для получения актуальной информации."
+
+msgid "Please wait while we prepare your payment."
+msgstr "Пожалуйста, подождите, пока мы подготавливаем ваш платёж."
+
+msgid "Processing your payment..."
+msgstr "Обрабатываем ваш платёж..."
+
+msgid "Redirecting to Nicky..."
+msgstr "Перенаправление на Nicky..."
+
+msgid "Show widget"
+msgstr "Показать виджет"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Status:"
+msgstr "Статус:"
+
+msgid "Supported: Bitcoin, Ethereum, USDT and more cryptocurrencies"
+msgstr "Поддерживаются: Bitcoin, Ethereum, USDT и другие криптовалюты"
+
+msgid "Thank you! Your payment has been received and your order is being processed."
+msgstr "Спасибо! Ваш платёж получен и заказ обрабатывается."
+
+msgid "The payment validation list is hidden for your account."
+msgstr "Список проверки платежей скрыт для вашего аккаунта."
+
+msgid "This logo will be displayed in the checkout."
+msgstr "Этот логотип будет отображаться при оформлении заказа."
+
+msgid "Title"
+msgstr "Название"
+
+msgid "Transaction ID"
+msgstr "Идентификатор транзакции"
+
+msgid "You can check the status at:"
+msgstr "Вы можете проверить статус по адресу:"
+
+msgid "You will be redirected to Nicky to complete your payment securely."
+msgstr "Вы будете перенаправлены на Nicky для безопасного завершения платежа."
+
+msgid "Your cryptocurrency payment for order #%s has been confirmed and is being processed."
+msgstr "Ваш платёж криптовалютой для заказа №%s подтверждён и обрабатывается."
+
+msgid "Your cryptocurrency payment is being processed - Order #%s"
+msgstr "Ваш платёж криптовалютой обрабатывается — Заказ №%s"
+
+msgid "Your cryptocurrency payment is being processed."
+msgstr "Ваш платёж криптовалютой обрабатывается."
+
+msgid "Your payment for order #%1$s failed. Please try again using this link: %2$s"
+msgstr "Платёж для заказа №%1$s не выполнен. Попробуйте снова по ссылке: %2$s"
+
+msgid "Your payment for order #%1$s was cancelled. You can retry your payment using this link: %2$s"
+msgstr "Платёж для заказа №%1$s отменён. Вы можете повторить оплату по ссылке: %2$s"
+
+msgid "Your payment is being processed. Please complete your payment to finalize your order."
+msgstr "Ваш платёж обрабатывается. Пожалуйста, завершите оплату для оформления заказа."
+
+msgid "Your payment is being processed. This page will update automatically."
+msgstr "Ваш платёж обрабатывается. Эта страница обновится автоматически."
