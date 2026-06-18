@@ -343,6 +343,7 @@ class Nicky_Checkout_Handler {
         }
 
         $short_id = $order->get_meta('_nicky_short_id');
+        $receiver_short_id = $order->get_meta('_nicky_receiver_short_id');
         $status = $order->get_status();
         
         ob_start();
@@ -354,7 +355,12 @@ class Nicky_Checkout_Handler {
             
             <?php if ($short_id): ?>
                 <p><strong><?php esc_html_e('Payment ID:', 'nicky-me'); ?></strong> <?php echo esc_html($short_id); ?></p>
-                <p><a href="https://pay.nicky.me/home?paymentId=<?php echo urlencode($short_id); ?>" target="_blank" class="button">
+                <?php
+                $nicky_payment_url = !empty($receiver_short_id)
+                    ? 'https://pay.nicky.me/payment-report/' . rawurlencode($receiver_short_id) . '?paymentId=' . rawurlencode($short_id)
+                    : 'https://pay.nicky.me/payment-report/?paymentId=' . rawurlencode($short_id);
+                ?>
+                <p><a href="<?php echo esc_url($nicky_payment_url); ?>" target="_blank" class="button">
                     <?php esc_html_e('Check Payment on Nicky', 'nicky-me'); ?>
                 </a></p>
             <?php endif; ?>

@@ -667,7 +667,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
             return array('result' => 'fail');
         }
 
+        $receiver_short_id = $this->get_receiver_short_id();
+
         $order->update_meta_data('_nicky_short_id', $short_id);
+        $order->update_meta_data('_nicky_receiver_short_id', $receiver_short_id);
         $order->update_meta_data('_nicky_payment_request_id', $payment_request_id);
         $order->update_meta_data('_nicky_blockchain_asset_id', $selected_asset_id);
         $order->update_meta_data('_nicky_conversion_quote_id', $quote_id);
@@ -692,7 +695,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
 
         WC()->cart->empty_cart();
 
-        $redirect_url = 'https://pay.nicky.me/home?paymentId=' . urlencode($short_id);
+        $redirect_url = !empty($receiver_short_id)
+            ? 'https://pay.nicky.me/payment-report/' . urlencode($receiver_short_id) . '?paymentId=' . urlencode($short_id)
+            : 'https://pay.nicky.me/payment-report/?paymentId=' . urlencode($short_id);
 
         return array(
             'result' => 'success',
@@ -830,6 +835,23 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         }
 
         return is_null($decoded) ? array() : $decoded;
+    }
+
+    private function get_receiver_short_id() {
+        $transient_key = 'nicky_receiver_short_id_' . md5($this->api_key);
+        $cached = get_transient($transient_key);
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $profile = $this->api_get('/api/public/User/profile');
+        $short_id = is_array($profile) && !empty($profile['shortId']) ? sanitize_text_field($profile['shortId']) : '';
+
+        if (!empty($short_id)) {
+            set_transient($transient_key, $short_id, HOUR_IN_SECONDS);
+        }
+
+        return $short_id;
     }
 
     private function api_post_with_key($path, $body = array(), $api_key = '') {
@@ -1258,8 +1280,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
         if (!$order || $order->get_payment_method() !== $this->id) return;
         
         $short_id = $order->get_meta('_nicky_short_id', true);
+        $receiver_short_id = $order->get_meta('_nicky_receiver_short_id', true);
         $blockchain_asset_id = $order->get_meta('_nicky_blockchain_asset_id', true);
-        
+
         if ($order->has_status('pending')) {
             echo '<div class="nicky-payment-pending" style="background: #f7f7f7; padding: 20px; margin: 20px 0; border-left: 4px solid #2271b1;">';
             echo '<h3 style="margin-top: 0;">⏳ ' . esc_html(__('Payment Pending', 'nicky-me')) . '</h3>';
@@ -1287,7 +1310,10 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                     }
                 }
 
-                echo '<p style="margin-top: 20px;"><a href="https://pay.nicky.me/home?paymentId=' . urlencode($short_id) . '" target="_blank" class="button button-primary" style="text-decoration: none;">';
+                $payment_page_url = !empty($receiver_short_id)
+                    ? 'https://pay.nicky.me/payment-report/' . urlencode($receiver_short_id) . '?paymentId=' . urlencode($short_id)
+                    : 'https://pay.nicky.me/payment-report/?paymentId=' . urlencode($short_id);
+                echo '<p style="margin-top: 20px;"><a href="' . esc_url($payment_page_url) . '" target="_blank" class="button button-primary" style="text-decoration: none;">';
                 echo '🔗 ' . esc_html(__('Continue to Payment', 'nicky-me')) . '</a></p>';
             }
 
@@ -1309,13 +1335,16 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
     public function email_instructions($order, $sent_to_admin, $plain_text = false) {
         if (!$sent_to_admin && $this->id === $order->get_payment_method() && $order->has_status('pending')) {
             $short_id = get_post_meta($order->get_id(), '_nicky_short_id', true);
-            
+            $receiver_short_id = get_post_meta($order->get_id(), '_nicky_receiver_short_id', true);
+
             if ($plain_text) {
                 echo "\n" . esc_html(__('Payment Instructions:', 'nicky-me')) . "\n";
                 echo esc_html(__('Your cryptocurrency payment is being processed.', 'nicky-me')) . "\n";
                 if ($short_id) {
                     echo esc_html(__('Payment ID:', 'nicky-me')) . ' ' . esc_html($short_id) . "\n";
-                    $payment_url = 'https://pay.nicky.me/home?paymentId=' . urlencode($short_id);
+                    $payment_url = !empty($receiver_short_id)
+                        ? 'https://pay.nicky.me/payment-report/' . rawurlencode($receiver_short_id) . '?paymentId=' . rawurlencode($short_id)
+                        : 'https://pay.nicky.me/payment-report/?paymentId=' . rawurlencode($short_id);
                     echo esc_html(__('You can check the status at:', 'nicky-me')) . ' ' . esc_url($payment_url) . "\n";
                 }
                 echo "\n";
@@ -1324,7 +1353,9 @@ class Nicky_WC_Gateway_Nicky extends WC_Payment_Gateway {
                 echo '<p>' . esc_html(__('Your cryptocurrency payment is being processed.', 'nicky-me')) . '</p>';
                 if ($short_id) {
                     echo '<p><strong>' . esc_html(__('Payment ID:', 'nicky-me')) . '</strong> ' . esc_html($short_id) . '</p>';
-                    $payment_url = 'https://pay.nicky.me/home?paymentId=' . urlencode($short_id);
+                    $payment_url = !empty($receiver_short_id)
+                        ? 'https://pay.nicky.me/payment-report/' . rawurlencode($receiver_short_id) . '?paymentId=' . rawurlencode($short_id)
+                        : 'https://pay.nicky.me/payment-report/?paymentId=' . rawurlencode($short_id);
                     echo '<p><a href="' . esc_url($payment_url) . '" target="_blank">';
                     echo esc_html(__('Check Payment Status', 'nicky-me')) . '</a></p>';
                 }

@@ -94,6 +94,7 @@ class Nicky_Payment_Dashboard_Widget {
     private function display_validation_order_row($order) {
         $order_id = $order->get_id();
         $short_id = $order->get_meta('_nicky_short_id', true);
+        $receiver_short_id = $order->get_meta('_nicky_receiver_short_id', true);
         $payment_request_id = $order->get_meta('_nicky_payment_request_id', true);
         
         echo '<tr>';
@@ -137,7 +138,9 @@ class Nicky_Payment_Dashboard_Widget {
         
         // Link to Nicky Payment Report
         if ($short_id) {
-            $nicky_report_url = 'https://pay.nicky.me/bill/' . urlencode($short_id);
+            $nicky_report_url = !empty($receiver_short_id)
+                ? 'https://pay.nicky.me/payment-report/' . rawurlencode($receiver_short_id) . '?paymentId=' . rawurlencode($short_id)
+                : 'https://pay.nicky.me/payment-report/?paymentId=' . rawurlencode($short_id);
             echo '<a href="' . esc_url($nicky_report_url) . '" target="_blank" class="button">';
             echo '📊 Nicky Report';
             echo '</a>';
